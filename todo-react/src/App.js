@@ -2,17 +2,18 @@ import React, { Component, Fragment } from 'react';
 import styled from "styled-components";
 import TodoItem from "./components/TodoItem";
 
-const InputForm = styled.form`
-  display: inline-block;
-  position: relative;
-  width: 100%;
+const InputContainer = styled.div`
   padding: 10px;
 `;
 
+const InputForm = styled.form`
+  position: relative;
+`;
+
 const InputTodo = styled.input`
+  display: inline-block;
   width: 100%;
   height: 40px;
-  padding: 0 40px 0 0;
   border: 1px solid #BBB;
   border-radius: 3px;
   &::selection {
@@ -25,7 +26,7 @@ const StyledAddButton = styled.button`
   height: 40px;
   line-height: 0;
   top: 50%;
-  right: 1px;
+  right: -3px;
   transform: translateY(-50%);
   border-radius: 3px;
   border: none;
@@ -49,22 +50,28 @@ class App extends Component {
 
   handleSubmit(e) {
     const { todo } = e.target.elements;
-    this.setState({ todoItems: [ ...this.state.todoItems, todo.value ] });
+    this.setState({ todoItems: [ ...this.state.todoItems, { whatTodo: todo.value, completed: false } ] });
     e.preventDefault();
     todo.value = '';
+  }
+
+  handleComplete(fromChild) {
+    console.log(fromChild);
   }
 
   render() {
     return (
       <Fragment>
-        <InputForm onSubmit={e => this.handleSubmit(e)}>
-          <InputTodo type="text" name="todo" placeholder="What should I do..."/>
-          <StyledAddButton type="submit">
-            ADD
-          </StyledAddButton>
-        </InputForm>
+        <InputContainer>
+          <InputForm onSubmit={e => this.handleSubmit(e)}>
+            <InputTodo type="text" name="todo" placeholder="What should I do..."/>
+            <StyledAddButton type="submit">
+              ADD
+            </StyledAddButton>
+          </InputForm>
+        </InputContainer>
         <TodoItems>
-          {this.state.todoItems.map((todoItem, index) => <TodoItem key={index} whatTodo={todoItem}/>)}
+          {this.state.todoItems.map((todoItem, index) => <TodoItem key={index} onChange={this.handleComplete} {...todoItem} />)}
         </TodoItems>
       </Fragment>
     );
