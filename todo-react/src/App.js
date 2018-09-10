@@ -2,8 +2,9 @@ import React, { Component, Fragment } from 'react';
 import styled from "styled-components";
 import TodoItem from "./components/TodoItem";
 import { List, Record } from "immutable";
-import BG_IMAGE from "./static/images/todo-background.jpg";
-import MenuBar from "./components/MenuBar";
+import Button from "./components/Button";
+import Header from "./components/Header";
+import BG_IMAGE from './static/images/todo-background.jpg';
 
 
 const Container = styled.div`
@@ -14,15 +15,12 @@ const InputContainer = styled.div`
   margin-bottom: 15px;
 `;
 
-const Title = styled.h1`
-  padding: 30px;
-  text-align: center;
-  font-size: 48px;
-  font-weight: bold;
-  color: #FFF;
-  background: linear-gradient(0deg, rgba(0, 0, 0, .70), rgba(0, 0, 0, .70)), url(${BG_IMAGE});
-  background-size: cover;
+const MenuContainer = styled.nav`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
+
 
 const InputForm = styled.form`
   position: relative;
@@ -46,7 +44,7 @@ const InputTodo = styled.input`
   }
 `;
 
-const StyledAddButton = styled.button`
+const AddButton = styled(Button)`
   position: absolute;
   height: 50px;
   line-height: 0;
@@ -106,22 +104,17 @@ class App extends Component {
     const todosToShow = filtered === null ? todoItems : todoItems.filter(item => item.checked === filtered);
     return (
       <Fragment>
-        <Title>
-          AWESOME TODO <span role="img" aria-label="dog">🐶</span>
-        </Title>
+        <Header bgImage={BG_IMAGE} textColor="white">AWESOME TODO <span role="img" aria-label="dog">🐶</span></Header>
         <Container>
           <InputContainer>
             <InputForm onSubmit={e => this.handleSubmit(e)}>
               <InputTodo type="text" name="todo" placeholder="What should I do..."/>
-              <StyledAddButton type="submit">
-                ADD
-              </StyledAddButton>
+              <AddButton type="submit">ADD</AddButton>
             </InputForm>
           </InputContainer>
-          <MenuBar
-            left={this.state.todoItems.size}
-            filter={this.handleFilter}
-          />
+          <MenuContainer>
+            {/*<Menu left={this.state.todoItems.size} filter={this.handleFilter}/>*/}
+          </MenuContainer>
           <TodoItems>
             {todosToShow.map((todo, index) => (
               <TodoItem
