@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 16">
+    <defs>
+        <style>
+            .cls-1{fill:none;stroke:#000;stroke-linecap:round;stroke-linejoin:round}
+        </style>
+    </defs>
+    <g id="Sorting" transform="translate(-393.676 -209.414)">
+        <g id="arrow-down" transform="translate(394.176 210.005)">
+            <path id="Line_13" d="M0 0v14.818" class="cls-1" data-name="Line 13" transform="translate(4.262)"/>
+            <path id="Path_19" d="M13.523 12l-4.261 5.473L5 12" class="cls-1" data-name="Path 19" transform="translate(-5 -2.565)"/>
+        </g>
+        <g id="arrow-up" transform="translate(405.65 209.914)">
+            <path id="Line_14" d="M0 14.818V0" class="cls-1" data-name="Line 14" transform="translate(4.263 .092)"/>
+            <path id="Path_20" d="M5 10.475L9.263 5l4.263 5.475" class="cls-1" data-name="Path 20" transform="translate(-5 -5)"/>
+        </g>
+    </g>
+</svg>

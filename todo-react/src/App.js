@@ -1,130 +1,56 @@
 import React, { Component, Fragment } from 'react';
-import styled from "styled-components";
-import TodoItem from "./components/TodoItem";
-import { List, Record } from "immutable";
-import Button from "./components/Button";
 import Header from "./components/Header";
-import BG_IMAGE from './static/images/todo-background.jpg';
-
-
-const Container = styled.div`
-  padding: 10px;
-`;
-
-const InputContainer = styled.div`
-  margin-bottom: 15px;
-`;
-
-const MenuContainer = styled.nav`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-
-const InputForm = styled.form`
-  position: relative;
-`;
-
-const InputTodo = styled.input`
-  display: inline-block;
-  width: 100%;
-  height: 50px;
-  padding: 10px;
-  border: 1px solid #BBB;
-  border-radius: 3px;
-  font-size: 14px;
-  box-shadow: 2px 2px 2px #DDD;
-  &::selection {
-    background: #54da64;
-  }
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 10px rgba(219, 1, 81, .25);
-  }
-`;
-
-const AddButton = styled(Button)`
-  position: absolute;
-  height: 50px;
-  line-height: 0;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  border-radius: 3px;
-  border: none;
-  padding: 0 20px;
-  background-color: #000;
-  color: #FFF;
-  font-size: 14px;
-  font-weight: bold;
-`;
-
-const TodoItems = styled.ul`
-  width: 100%;
-`;
-
+import TabMenu from "./components/TabMenu"
+import Tab from "./components/Tab";
+import SortButton from "./components/SortButton";
 
 class App extends Component {
 
-  static Todo = Record({ id: null, whatTodo: null, checked: false });
+  static ID = 0;
+  static todoItem = { id: null, whatTodo: null, status: 1, createdAt: null };
 
   state = {
-    id: 0,
-    filtered: null,
-    todoItems: List([ new App.Todo({ id: 999, whatTodo: "디디 귀여워하기", checked: false }) ])
+    todoItems: []
   };
 
-  toggleCheckbox = (index) => {
-    const { todoItems } = this.state;
-    const currentStatus = todoItems.get(index).get('checked');
-    this.setState({ todoItems: todoItems.update(index, todo => todo.set('checked', !currentStatus)) });
+  addTodoItem = whatTodo => {
+    const todoItem = { ...App.todoItem, id: ++App.ID, whatTodo, createdAt: new Date() };
+    this.setState({ todoItems: [...this.state.todoItems, todoItem] });
   };
 
-  handleRemove = (index) => {
-    const { todoItems } = this.state;
-    this.setState({ todoItems: todoItems.delete(index) });
-  };
-
-  handleFilter = (status) => {
-    this.setState({ filtered: status });
-  };
-
-  handleSubmit(e) {
-    const { todo } = e.target.elements;
-    const todoItem = new App.Todo({ id: this.state.id, whatTodo: todo.value, checked: false });
-    this.setState({ id: this.state.id + 1 });
-    this.setState({ todoItems: this.state.todoItems.push(todoItem) });
-    todo.value = '';
+  handleFormSubmit = e => {
+    const { whatTodo } = e.target.elements;
+    this.addTodoItem(whatTodo.value);
+    whatTodo.value = '';
     e.preventDefault();
-  }
+  };
+
+  handleRemove = id => {
+    this.setState({ todoItems: [...this.state.todoItems.filter(todoItem => todoItem.id !== id)] })
+  };
 
   render() {
-    const { filtered, todoItems } = this.state;
-    const todosToShow = filtered === null ? todoItems : todoItems.filter(item => item.checked === filtered);
     return (
       <Fragment>
-        <Header bgImage={BG_IMAGE} textColor="white">AWESOME TODO <span role="img" aria-label="dog">🐶</span></Header>
-        <Container>
-          <InputContainer>
-            <InputForm onSubmit={e => this.handleSubmit(e)}>
-              <InputTodo type="text" name="todo" placeholder="What should I do..."/>
-              <AddButton type="submit">ADD</AddButton>
-            </InputForm>
-          </InputContainer>
-          <MenuContainer>
-            {/*<Menu left={this.state.todoItems.size} filter={this.handleFilter}/>*/}
-          </MenuContainer>
-          <TodoItems>
-            {todosToShow.map((todo, index) => (
-              <TodoItem
-                key={index}
-                onChange={this.toggleCheckbox.bind(this, index)}
-                delete={this.handleRemove.bind(this, index)}
-                {...todo.toJS()} />
-            ))}
-          </TodoItems>
-        </Container>
+        <Header/>
+        <TabMenu>
+          <Tab isActive={true} label="ALL" />
+          <Tab isActive={false} label="TODO" />
+          <Tab isActive={false} label="DONE" />
+          <SortButton/>
+        </TabMenu>
+        <form onSubmit={this.handleFormSubmit}>
+          <input type="text" name="whatTodo" placeholder="내일 오후 3시까지 우체국 가기" autoFocus={true}/>
+          <input type="submit" value="submit"/>
+        </form>
+        {
+          this.state.todoItems.map((todoItem, key) => (
+            <li key={key}>
+              <span>{todoItem.whatTodo}</span>
+              <button onClick={this.handleRemove.bind(null, todoItem.id)}>x</button>
+            </li>
+          ))
+        }
       </Fragment>
     );
   }
