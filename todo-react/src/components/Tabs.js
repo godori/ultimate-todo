@@ -2,7 +2,6 @@ import React, { Component, Fragment } from 'react';
 import styled from "styled-components";
 import Pane from "./Pane";
 
-
 const StyledTabs = styled.ul`
   display: inline-flex;
   height: 100%;
