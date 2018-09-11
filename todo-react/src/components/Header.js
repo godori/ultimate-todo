@@ -29,7 +29,7 @@ const Header = () => {
     <Fragment>
       <StyledHeader>
         <Title>
-          YESTERDAY YOU SAID <TitleHighlighted>TOMORROW</TitleHighlighted>!
+          YESTERDAY YOU SAID <TitleHighlighted>TOMORROW!</TitleHighlighted>
         </Title>
       </StyledHeader>
     </Fragment>

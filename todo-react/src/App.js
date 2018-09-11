@@ -1,8 +1,9 @@
 import React, { Component, Fragment } from 'react';
 import Header from "./components/Header";
-import TabMenu from "./components/TabMenu"
-import Tab from "./components/Tab";
+import Tabs from "./components/Tabs";
+import Pane from "./components/Pane";
 import SortButton from "./components/SortButton";
+import Navigation from "./components/NavBar";
 
 class App extends Component {
 
@@ -10,12 +11,13 @@ class App extends Component {
   static todoItem = { id: null, whatTodo: null, status: 1, createdAt: null };
 
   state = {
-    todoItems: []
+    todoItems: [],
+    tabs: [ 'ALL', 'TODO', 'DONE' ]
   };
 
   addTodoItem = whatTodo => {
     const todoItem = { ...App.todoItem, id: ++App.ID, whatTodo, createdAt: new Date() };
-    this.setState({ todoItems: [...this.state.todoItems, todoItem] });
+    this.setState({ todoItems: [ ...this.state.todoItems, todoItem ] });
   };
 
   handleFormSubmit = e => {
@@ -26,22 +28,20 @@ class App extends Component {
   };
 
   handleRemove = id => {
-    this.setState({ todoItems: [...this.state.todoItems.filter(todoItem => todoItem.id !== id)] })
+    this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.id !== id) ] });
   };
 
   render() {
     return (
       <Fragment>
         <Header/>
-        <TabMenu>
-          <Tab isActive={true} label="ALL" />
-          <Tab isActive={false} label="TODO" />
-          <Tab isActive={false} label="DONE" />
+        <Navigation>
+          <Tabs initialValue={0} tabNames={this.state.tabs} />
           <SortButton/>
-        </TabMenu>
+        </Navigation>
         <form onSubmit={this.handleFormSubmit}>
           <input type="text" name="whatTodo" placeholder="내일 오후 3시까지 우체국 가기" autoFocus={true}/>
-          <input type="submit" value="submit"/>
+          <button type="submit">submit</button>
         </form>
         {
           this.state.todoItems.map((todoItem, key) => (

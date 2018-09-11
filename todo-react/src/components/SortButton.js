@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Icon from '../static/images/Sorting.svg';
 
 const SortBtn = styled.button`
-  margin-left: auto;
+  float: right;
 `;
 
 const SortIcon = styled.i`

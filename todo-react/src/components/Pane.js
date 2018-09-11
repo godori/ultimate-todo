@@ -16,6 +16,7 @@ const TabContainer = styled.li`
 
 const Inactivate = styled.a`
   text-decoration: none;
+  cursor: pointer;
   color: #B8B8B8;
 `;
 
@@ -33,14 +34,18 @@ const Activate = Inactivate.extend`
   }
 `;
 
-const Tab = ({ label, isActive }) => {
+const Pane = ({ onClick, label, isActive }) => {
   return (
     <Fragment>
       <TabContainer>
-        {isActive ? <Activate>{label}</Activate> : <Inactivate>{label}</Inactivate>}
+        {
+          isActive
+          ? <Activate onClick={onClick}>{label}</Activate>
+          : <Inactivate onClick={onClick}>{label}</Inactivate>
+        }
       </TabContainer>
     </Fragment>
   );
 };
 
-export default Tab;
+export default Pane;
