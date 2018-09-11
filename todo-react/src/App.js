@@ -1,10 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import Header from "./components/Header";
 import Tabs from "./components/Tabs";
-import Pane from "./components/Pane";
 import SortButton from "./components/SortButton";
 import Navigation from "./components/NavBar";
 import SearchForm from "./components/SearchForm";
+import FloatPlusButton from "./components/FloatPlusButton";
 
 class App extends Component {
 
@@ -13,7 +13,8 @@ class App extends Component {
 
   state = {
     todoItems: [],
-    tabs: [ 'ALL', 'TODO', 'DONE' ]
+    tabs: [ 'ALL', 'TODO', 'DONE' ],
+    searchTerm: '',
   };
 
   addTodoItem = whatTodo => {
@@ -32,43 +33,37 @@ class App extends Component {
     this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.id !== id) ] });
   };
 
-  handleSearch = e => {
-    const ESC = 27;
-    const ENTER = 13;
-    switch (e.keyCode) {
-      case ESC:
-        e.currentTarget.innerText = '';
-        e.target.blur();
-        return;
-      case ENTER:
-        e.preventDefault();
-        return;
-      default:
-        return;
-    }
+  handleSearch = input => {
+    this.setState({ searchTerm: input })
   };
 
   render() {
-    return (
-      <Fragment>
-        <Header/>
-        <Navigation>
-          <Tabs initialValue={0} tabNames={this.state.tabs} />
-          <SortButton/>
-        </Navigation>
-        <SearchForm onChange={this.handleSearch} />
-        <form onSubmit={this.handleFormSubmit}>
-          <input type="text" name="whatTodo" placeholder="내일 오후 3시까지 우체국 가기" autoFocus={true}/>
-          <button type="submit">submit</button>
-        </form>
-        {
-          this.state.todoItems.map((todoItem, key) => (
+    const mapToComponent = todoItems => {
+      return todoItems.map((todoItem, key) => {
+        if (todoItem.whatTodo.includes(this.state.searchTerm)) {
+          return (
             <li key={key}>
               <span>{todoItem.whatTodo}</span>
               <button onClick={this.handleRemove.bind(null, todoItem.id)}>x</button>
             </li>
-          ))
+          )
         }
+      })
+    };
+    return (
+      <Fragment>
+        <Header/>
+        <Navigation>
+          <Tabs initialValue={0} tabNames={this.state.tabs}/>
+          <SortButton/>
+        </Navigation>
+        <SearchForm searchHandler={this.handleSearch}/>
+        <form onSubmit={this.handleFormSubmit}>
+          <input type="text" name="whatTodo" placeholder="내일 오후 3시까지 우체국 가기" autoFocus={true}/>
+          <button type="submit">submit</button>
+        </form>
+        {mapToComponent(this.state.todoItems)}
+        <FloatPlusButton/>
       </Fragment>
     );
   }

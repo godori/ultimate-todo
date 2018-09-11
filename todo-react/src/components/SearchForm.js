@@ -1,24 +1,36 @@
 import React, { Fragment } from 'react';
 import styled from "styled-components";
-import Icon from '../static/images/search-icon.svg';
+import SearchIconSVG from '../static/images/search-icon.svg';
+import XCircleIconSVG from '../static/images/x-circle.svg';
 
 const Form = styled.form`
   display: flex;
   align-items: center;
-  margin: 15px 10px 10px 15px;
+  margin: 15px;
   padding: 10px;
   height: 35px;
   border: 1px solid #E8E8E8;
-  border-radius: 5px
+  border-radius: 5px;
+  
+  &:focus-within {
+    border: 1px solid rgba(0, 255, 227, .5);
+  }
 `;
 
-const SearchIcon = styled.i`
+const IconDefault = styled.i`
   display: inline-block;
   width: 15px;
   height: 15px;
-  margin-right: 16px;
-  background: url(${Icon});
   background-size: cover;
+`;
+
+const SearchIcon = IconDefault.extend`
+  margin-right: 16px;
+  background: url(${SearchIconSVG}) no-repeat;
+`;
+
+const DeleteIcon = IconDefault.extend`
+  background: url(${XCircleIconSVG}) no-repeat;
 `;
 
 const SearchInput = styled.span`
@@ -36,13 +48,41 @@ const SearchInput = styled.span`
   }
   
   &:focus {
-    outline: 1px solid rgba(0, 255, 227, .5);
+    outline: none;
+  }
+  
+  &:empty + i {
+    display: none;
   }
 `;
 
 class SearchForm extends React.Component {
 
-  inputBox = null;
+  input = null;
+
+  clearInputField = () => {
+    this.input.textContent = '';
+  };
+
+  handleInput = event => {
+    const ESC = 27;
+    const ENTER = 13;
+    const { keyCode, currentTarget } = event;
+    const { textContent } = currentTarget;
+
+    switch (keyCode) {
+      case ESC:
+        this.clearInputField();
+        this.props.searchHandler('');
+        currentTarget.blur();
+        return;
+      case ENTER:
+        event.preventDefault();
+        return;
+      default:
+        textContent && this.props.searchHandler(textContent);
+    }
+  };
 
   render() {
     return (
@@ -50,13 +90,15 @@ class SearchForm extends React.Component {
         <Form name="search">
           <SearchIcon/>
           <SearchInput
-            onKeyDown={this.props.onChange.bind(this)}
-            ref={ref => this.inputBox = ref}
+            onKeyDown={this.handleInput}
+            onKeyUp={this.handleInput}
+            innerRef={component => this.input = component}
             contentEditable="true"
             placeholder="Search for tasks"/>
+          <DeleteIcon onClick={this.clearInputField}/>
         </Form>
       </Fragment>
-    )
+    );
   }
 }
 

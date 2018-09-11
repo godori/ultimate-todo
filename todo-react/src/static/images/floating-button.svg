@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 68 68">
+    <defs>
+        <style>
+            .cls-1{fill:#222}.cls-2{fill:none;stroke:#fff;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px}.cls-3{filter:url(#Ellipse_5)}
+        </style>
+        <filter id="Ellipse_5" width="68" height="68" x="0" y="0" filterUnits="userSpaceOnUse">
+            <feOffset dy="3"/>
+            <feGaussianBlur result="blur" stdDeviation="3"/>
+            <feFlood flood-opacity=".302"/>
+            <feComposite in2="blur" operator="in"/>
+            <feComposite in="SourceGraphic"/>
+        </filter>
+    </defs>
+    <g id="Floating_Button" data-name="Floating Button" transform="translate(-296 -591)">
+        <g class="cls-3" transform="translate(296 591)">
+            <circle id="Ellipse_5-2" cx="25" cy="25" r="25" class="cls-1" data-name="Ellipse 5" transform="translate(9 6)"/>
+        </g>
+        <g id="plus_2_" data-name="plus (2)" transform="translate(318 610)">
+            <path id="Line_9" d="M0 0v14" class="cls-2" data-name="Line 9" transform="translate(12 5)"/>
+            <path id="Line_10" d="M0 0h14" class="cls-2" data-name="Line 10" transform="translate(5 12)"/>
+        </g>
+    </g>
+</svg>

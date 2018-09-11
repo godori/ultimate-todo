@@ -4,6 +4,7 @@ import Icon from '../static/images/Sorting.svg';
 
 const SortBtn = styled.button`
   float: right;
+  border: none;
 `;
 
 const SortIcon = styled.i`
@@ -12,6 +13,7 @@ const SortIcon = styled.i`
   height: 15px;
   background: url(${Icon});
   background-size: cover;
+  
 `;
 
 const SortButton = () => {
