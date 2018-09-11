@@ -12,7 +12,7 @@ const bounce = keyframes`
 `;
 
 const Button = styled.button`
-  position: fixed;
+  position: absolute;
   text-align: center;
   bottom: 20px;
   right: 20px;
@@ -43,10 +43,10 @@ const PlusIcon = styled.i`
   mask-size: cover;
 `;
 
-const FloatPlusButton = () => {
+const FloatPlusButton = ({ onClick }) => {
   return (
     <Fragment>
-      <Button>
+      <Button onClick={onClick}>
         <PlusIcon/>
       </Button>
     </Fragment>

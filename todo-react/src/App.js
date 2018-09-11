@@ -5,6 +5,9 @@ import SortButton from "./components/SortButton";
 import Navigation from "./components/NavBar";
 import SearchForm from "./components/SearchForm";
 import FloatPlusButton from "./components/FloatPlusButton";
+import AddTodoOverlay from "./components/AddTodoOverlay";
+import Container from "./components/Container";
+
 
 class App extends Component {
 
@@ -15,6 +18,7 @@ class App extends Component {
     todoItems: [],
     tabs: [ 'ALL', 'TODO', 'DONE' ],
     searchTerm: '',
+    overLayVisible: false,
   };
 
   addTodoItem = whatTodo => {
@@ -34,36 +38,46 @@ class App extends Component {
   };
 
   handleSearch = input => {
-    this.setState({ searchTerm: input })
+    this.setState({ searchTerm: input });
+  };
+
+  hideOverLay = () => {
+    this.setState({ overLayVisible: false });
+  };
+
+  showOverLay = () => {
+    this.setState({ overLayVisible: true });
   };
 
   render() {
     const mapToComponent = todoItems => {
-      return todoItems.map((todoItem, key) => {
-        if (todoItem.whatTodo.includes(this.state.searchTerm)) {
+      return todoItems
+        .filter(todoItem => todoItem.whatTodo.includes(this.state.searchTerm))
+        .map((todoItem, key) => {
           return (
             <li key={key}>
               <span>{todoItem.whatTodo}</span>
               <button onClick={this.handleRemove.bind(null, todoItem.id)}>x</button>
             </li>
-          )
-        }
-      })
+          );
+        });
     };
     return (
       <Fragment>
-        <Header/>
-        <Navigation>
-          <Tabs initialValue={0} tabNames={this.state.tabs}/>
-          <SortButton/>
-        </Navigation>
-        <SearchForm searchHandler={this.handleSearch}/>
-        <form onSubmit={this.handleFormSubmit}>
-          <input type="text" name="whatTodo" placeholder="내일 오후 3시까지 우체국 가기" autoFocus={true}/>
-          <button type="submit">submit</button>
-        </form>
-        {mapToComponent(this.state.todoItems)}
-        <FloatPlusButton/>
+        <Container>
+          <Header/>
+          <Navigation>
+            <Tabs initialValue={0} tabNames={this.state.tabs}/>
+            <SortButton/>
+          </Navigation>
+          <SearchForm searchHandler={this.handleSearch}/>
+          {mapToComponent(this.state.todoItems)}
+          <FloatPlusButton onClick={this.showOverLay}/>
+          <AddTodoOverlay
+            visible={this.state.overLayVisible}
+            onClose={this.hideOverLay}
+            onSubmit={this.handleFormSubmit}/>
+        </Container>
       </Fragment>
     );
   }
