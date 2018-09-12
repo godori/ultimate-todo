@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const Overlay = styled.div`
   position: fixed;
@@ -70,31 +70,32 @@ const Button = styled.button`
 class AddTodoOverlay extends Component {
 
   _input = null;
-
   handleFormClick = e => {
     e.stopPropagation();
   };
 
-
-  componentDidUpdate(prevProps, prevState) {
-    this._input.focus();
+  componentWillMount() {
     document.addEventListener('keydown', e => {
       e.keyCode === 27 && this.props.onClose();
     });
   }
 
+  componentDidMount() {
+    this._input.focus();
+  }
+
   render() {
+    const { onClose, onSubmit } = this.props;
     return (
       <Fragment>
-        <Overlay visible={this.props.visible} onClick={this.props.onClose}>
-          <Form onClick={this.handleFormClick} onSubmit={this.props.onSubmit}>
+        <Overlay visible={this.props.visible} onClick={onClose}>
+          <Form onClick={this.handleFormClick} onSubmit={onSubmit}>
             <Label>What's next?</Label>
             <Input
               type="text"
               name="whatTodo"
               innerRef={ref => this._input = ref}
               placeholder="내일 오후 3시까지 우체국 가기"
-
               autoFocus={true}/>
             <Button type="submit">ADD</Button>
           </Form>

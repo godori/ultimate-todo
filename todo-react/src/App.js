@@ -70,7 +70,7 @@ class App extends Component {
             <Tabs initialValue={0} tabNames={this.state.tabs}/>
             <SortButton/>
           </Navigation>
-          <SearchForm searchHandler={this.handleSearch}/>
+          <SearchForm handleSearch={this.handleSearch}/>
           {mapToComponent(this.state.todoItems)}
           <FloatPlusButton onClick={this.showOverLay}/>
           <AddTodoOverlay

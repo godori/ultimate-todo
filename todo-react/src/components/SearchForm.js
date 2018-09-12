@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import styled from "styled-components";
+import styled from 'styled-components';
 import SearchIconSVG from '../static/images/search-icon.svg';
 import XCircleIconSVG from '../static/images/x-circle.svg';
 
@@ -24,12 +24,12 @@ const IconDefault = styled.i`
   background-size: cover;
 `;
 
-const SearchIcon = IconDefault.extend`
+const SearchIcon = styled(IconDefault)`
   margin-right: 16px;
   background: url(${SearchIconSVG}) no-repeat;
 `;
 
-const DeleteIcon = IconDefault.extend`
+const DeleteIcon = styled(IconDefault)`
   background: url(${XCircleIconSVG}) no-repeat;
 `;
 
@@ -58,29 +58,28 @@ const SearchInput = styled.span`
 
 class SearchForm extends React.Component {
 
-  input = null;
+  _input = '';
 
   clearInputField = () => {
-    this.input.textContent = '';
+    this._input.textContent = '';
   };
 
   handleInput = event => {
+    console.log(event);
     const ESC = 27;
     const ENTER = 13;
     const { keyCode, currentTarget } = event;
-    const { textContent } = currentTarget;
-
     switch (keyCode) {
       case ESC:
+        this.props.handleSearch('');
         this.clearInputField();
-        this.props.searchHandler('');
         currentTarget.blur();
         return;
       case ENTER:
         event.preventDefault();
         return;
       default:
-        textContent && this.props.searchHandler(textContent);
+        return;
     }
   };
 
@@ -90,9 +89,8 @@ class SearchForm extends React.Component {
         <Form name="search">
           <SearchIcon/>
           <SearchInput
-            onKeyDown={this.handleInput}
-            onKeyUp={this.handleInput}
-            innerRef={component => this.input = component}
+            onChange={this.handleInput}
+            innerRef={ref => this._input = ref}
             contentEditable="true"
             placeholder="Search for tasks"/>
           <DeleteIcon onClick={this.clearInputField}/>

@@ -20,7 +20,7 @@ const Inactivate = styled.a`
   color: #B8B8B8;
 `;
 
-const Activate = Inactivate.extend`
+const Activate = styled(Inactivate)`
   position: relative;
   color: #000000;
   &:after {
