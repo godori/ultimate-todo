@@ -61,14 +61,14 @@ class SearchForm extends React.Component {
   _input = '';
 
   clearInputField = () => {
-    this._input.textContent = '';
+    this._input.innerHTML = '';
   };
 
   handleInput = event => {
-    console.log(event);
     const ESC = 27;
     const ENTER = 13;
     const { keyCode, currentTarget } = event;
+    const { textContent } = currentTarget;
     switch (keyCode) {
       case ESC:
         this.props.handleSearch('');
@@ -79,6 +79,7 @@ class SearchForm extends React.Component {
         event.preventDefault();
         return;
       default:
+        this.props.handleSearch(textContent);
         return;
     }
   };
@@ -89,7 +90,8 @@ class SearchForm extends React.Component {
         <Form name="search">
           <SearchIcon/>
           <SearchInput
-            onChange={this.handleInput}
+            onKeyUp={this.handleInput}
+            onKeyDown={this.handleInput}
             innerRef={ref => this._input = ref}
             contentEditable="true"
             placeholder="Search for tasks"/>

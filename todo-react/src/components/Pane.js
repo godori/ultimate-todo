@@ -14,15 +14,12 @@ const TabContainer = styled.li`
   }
 `;
 
-const Inactivate = styled.a`
+const StyledPane = styled.a`
   text-decoration: none;
   cursor: pointer;
   color: #B8B8B8;
-`;
-
-const Activate = styled(Inactivate)`
-  position: relative;
-  color: #000000;
+  transition: color 100ms ease-in-out;
+  
   &:after {
     content: '';
     display: block;
@@ -32,17 +29,22 @@ const Activate = styled(Inactivate)`
     left: 0;
     border-bottom: 2px solid #000;
   }
+  
+  &:hover {
+    color: #000000;
+  }
+  
+  &.active {
+    position: relative;
+    color: #000000;
+  }
 `;
 
 const Pane = ({ onClick, label, isActive }) => {
   return (
     <Fragment>
       <TabContainer>
-        {
-          isActive
-          ? <Activate onClick={onClick}>{label}</Activate>
-          : <Inactivate onClick={onClick}>{label}</Inactivate>
-        }
+        <StyledPane className={isActive && 'active'} onClick={onClick}>{label}</StyledPane>
       </TabContainer>
     </Fragment>
   );

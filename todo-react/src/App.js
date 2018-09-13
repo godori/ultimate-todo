@@ -7,15 +7,16 @@ import SearchForm from "./components/SearchForm";
 import FloatPlusButton from "./components/FloatPlusButton";
 import AddTodoOverlay from "./components/AddTodoOverlay";
 import Container from "./components/Container";
+import TodoItem from "./components/TodoItem";
 
 
 class App extends Component {
 
   static ID = 0;
-  static todoItem = { id: null, whatTodo: null, status: 1, createdAt: null };
+  static todoItem = { id: null, whatTodo: null, status: -1, createdAt: null };
 
   state = {
-    todoItems: [],
+    todoItems: [ { id: 999, whatTodo: '디디 산책시키기', status: -1, createdAt: new Date() } ],
     tabs: [ 'ALL', 'TODO', 'DONE' ],
     searchTerm: '',
     overLayVisible: false,
@@ -37,6 +38,16 @@ class App extends Component {
     this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.id !== id) ] });
   };
 
+  toggleCheckBox = id => {
+    const updated = this.state.todoItems.map(todoItem => {
+      if (todoItem.id === id) {
+        todoItem.status *= -1
+      }
+      return todoItem
+    });
+    this.setState({ todoItems: [ ...updated ] });
+  };
+
   handleSearch = input => {
     this.setState({ searchTerm: input });
   };
@@ -53,14 +64,16 @@ class App extends Component {
     const mapToComponent = todoItems => {
       return todoItems
         .filter(todoItem => todoItem.whatTodo.includes(this.state.searchTerm))
-        .map((todoItem, key) => {
-          return (
-            <li key={key}>
-              <span>{todoItem.whatTodo}</span>
-              <button onClick={this.handleRemove.bind(null, todoItem.id)}>x</button>
-            </li>
-          );
-        });
+        .map((todoItem, key) => (
+          <TodoItem
+            key={key}
+            handleCheck={this.toggleCheckBox.bind(null, todoItem.id)}
+            handleRemove={this.handleRemove.bind(null, todoItem.id)}
+            whatTodo={todoItem.whatTodo}
+            status={todoItem.status}
+            startDate={todoItem.createdAt}
+            endDate={todoItem.createdAt}/>
+        ));
     };
     return (
       <Fragment>

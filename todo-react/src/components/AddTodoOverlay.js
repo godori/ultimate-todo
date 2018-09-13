@@ -80,8 +80,8 @@ class AddTodoOverlay extends Component {
     });
   }
 
-  componentDidMount() {
-    this._input.focus();
+  componentDidUpdate() {
+    this.props.visible ? this._input.focus() : this._input.blur();
   }
 
   render() {

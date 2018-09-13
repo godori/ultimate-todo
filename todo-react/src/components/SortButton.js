@@ -6,6 +6,9 @@ const SortBtn = styled.button`
   float: right;
   border: none;
   background: transparent;
+  &:focus {
+    outline: none;
+  }
 `;
 
 const SortIcon = styled.i`
@@ -14,7 +17,6 @@ const SortIcon = styled.i`
   height: 15px;
   background: url(${Icon});
   background-size: cover;
-  
 `;
 
 const SortButton = () => {

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 22">
+    <defs>
+        <style>
+            .cls-1{fill:none;stroke:#e8e8e8;stroke-linecap:round;stroke-linejoin:round;stroke-width:2px}
+        </style>
+    </defs>
+    <g id="remove_btn" transform="translate(-2 -1)">
+        <path id="Path_21" d="M3 6h18" class="cls-1" data-name="Path 21"/>
+        <path id="Path_22" d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" class="cls-1" data-name="Path 22"/>
+        <path id="Line_15" d="M0 0v6" class="cls-1" data-name="Line 15" transform="translate(10 11)"/>
+        <path id="Line_16" d="M0 0v6" class="cls-1" data-name="Line 16" transform="translate(14 11)"/>
+    </g>
+</svg>
