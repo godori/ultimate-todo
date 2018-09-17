@@ -36,7 +36,7 @@ const DeleteIcon = styled(IconDefault)`
 const SearchInput = styled.span`
   display: inline-block;
   width: 100%;
-  font-family: "SF Compact Text", sans-serif;
+  font-family: SFCompactText, sans-serif;
   font-size: 14px;
   font-weight: 300;
   letter-spacing: -0.5px;
@@ -92,7 +92,7 @@ class SearchForm extends React.Component {
           <SearchInput
             onKeyUp={this.handleInput}
             onKeyDown={this.handleInput}
-            innerRef={ref => this._input = ref}
+            ref={ref => this._input = ref}
             contentEditable="true"
             placeholder="Search for tasks"/>
           <DeleteIcon onClick={this.clearInputField}/>

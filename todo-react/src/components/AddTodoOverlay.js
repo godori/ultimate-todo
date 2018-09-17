@@ -17,7 +17,7 @@ const Form = styled.form`
   border-bottom: solid 2px #00ffe2;
   padding-bottom: 14.5px;
   
-  font-family: "SF Compact Display", sans-serif;
+  font-family: SFCompactText, sans-serif;
   
   position: absolute;
   left: 50%;
@@ -80,10 +80,6 @@ class AddTodoOverlay extends Component {
     });
   }
 
-  componentDidUpdate() {
-    this.props.visible ? this._input.focus() : this._input.blur();
-  }
-
   render() {
     const { onClose, onSubmit } = this.props;
     return (
@@ -94,7 +90,7 @@ class AddTodoOverlay extends Component {
             <Input
               type="text"
               name="whatTodo"
-              innerRef={ref => this._input = ref}
+              ref={ref => this._input = ref}
               placeholder="내일 오후 3시까지 우체국 가기"
               autoFocus={true}/>
             <Button type="submit">ADD</Button>

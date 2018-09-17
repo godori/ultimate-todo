@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import CheckedIcon from '../static/images/check.svg';
 import TrashIcon from '../static/images/remove-btn.svg';
 
@@ -10,28 +10,50 @@ const StyledTodoItem = styled.article`
   height: 75px;
   padding: 19px 20px 17px;
   border-bottom: 1px solid #E8E8E8;
+  font-family: SFCompactText, sans-serif;
 `;
 
-const Content = styled.p`
+const Content = styled.div`
   flex-grow: 5;
+  padding-right: 5px;
+  overflow: hidden;
+  color: #DDD;
 `;
 
-const WhatTodo = styled.span`
-  
+const WhatTodo = styled.p`
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #444;
+  ${props => props.completed && css`
+    color: #B8B8B8;
+    text-decoration: line-through;
+  `}
 `;
 
-const Date = styled.span`
-  
+const Date = styled.p`
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.15;
+  color: #FD9A9A;
+  letter-spacing: -0.5px;
+  ${props => props.completed && css`
+    color: #B8B8B8;
+    text-decoration: line-through;
+  `}
 `;
 
 const TrashButton = styled.i`
   display: inline-block;
   width: 18px;
-  height: 20px;
+  height: 100%;
   color:#000;
-  background-color: #BBB;
+  background-color: #FFE3E3;
   mask: url(${TrashIcon}) no-repeat 50% 50%;
-  mask-size: cover;
+  mask-size: contain;
+  ${props => props.completed && css`
+    background-color: #BBB;
+  `}
 `;
 
 const CheckBox = styled.button`
@@ -41,6 +63,8 @@ const CheckBox = styled.button`
   border-radius: 100%;
   border: 1px solid #DDDDDD;
   text-align: center;
+  background-color: transparent;
+  margin-right: 15px;
   
   &:focus {
     outline: none;
@@ -59,9 +83,10 @@ const TodoItem = ({ whatTodo, status, startDate, endDate, handleCheck, handleRem
       <StyledTodoItem>
         <CheckBox onClick={handleCheck} className={status === 1 && 'active'}/>
         <Content>
-          {whatTodo}
+          <WhatTodo completed={status > 0}>{whatTodo}</WhatTodo>
+          <Date completed={status > 0}>{startDate.toLocaleString()} ~ {endDate.toLocaleString()}</Date>
         </Content>
-        <TrashButton onClick={handleRemove} />
+        <TrashButton completed={status > 0} onClick={handleRemove}/>
       </StyledTodoItem>
     </Fragment>
   );

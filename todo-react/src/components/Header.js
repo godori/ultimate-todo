@@ -13,7 +13,7 @@ const StyledHeader = styled.header`
 const Title = styled.h1`
   width: 158px;
   line-height: 1.21;
-  font-family: "SF Compact Display", sans-serif;
+  font-family: SFCompactText, sans-serif;
   font-size: 28px;
   font-weight: 600;
   text-align: left;

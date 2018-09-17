@@ -38,12 +38,12 @@ class App extends Component {
     this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.id !== id) ] });
   };
 
-  toggleCheckBox = id => {
+  checkTodoItem = id => {
     const updated = this.state.todoItems.map(todoItem => {
       if (todoItem.id === id) {
-        todoItem.status *= -1
+        todoItem.status *= -1;
       }
-      return todoItem
+      return todoItem;
     });
     this.setState({ todoItems: [ ...updated ] });
   };
@@ -67,7 +67,7 @@ class App extends Component {
         .map((todoItem, key) => (
           <TodoItem
             key={key}
-            handleCheck={this.toggleCheckBox.bind(null, todoItem.id)}
+            handleCheck={this.checkTodoItem.bind(null, todoItem.id)}
             handleRemove={this.handleRemove.bind(null, todoItem.id)}
             whatTodo={todoItem.whatTodo}
             status={todoItem.status}

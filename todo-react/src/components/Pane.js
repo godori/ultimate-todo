@@ -5,7 +5,7 @@ import styled from "styled-components";
 const TabContainer = styled.li`
   display: inline-block;
   margin-right: 23px;
-  font-family: "SF Compact Text", sans-serif;
+  font-family: SFCompactText, sans-serif;
   font-size: 16px;
   font-weight: 600;
   
