@@ -80,6 +80,10 @@ class AddTodoOverlay extends Component {
     });
   }
 
+  componentDidUpdate() {
+    this.props.visible && this._input.focus();
+  }
+
   render() {
     const { onClose, onSubmit } = this.props;
     return (

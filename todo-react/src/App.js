@@ -20,6 +20,8 @@ class App extends Component {
     tabs: [ 'ALL', 'TODO', 'DONE' ],
     searchTerm: '',
     overLayVisible: false,
+    status: 0,
+    sortType: 'desc'
   };
 
   addTodoItem = whatTodo => {
@@ -36,6 +38,15 @@ class App extends Component {
 
   handleRemove = id => {
     this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.id !== id) ] });
+  };
+
+  handleFiltering = tabName => {
+    const tabNameStatus = {
+      'ALL': 0,
+      'TODO': -1,
+      'DONE': 1
+  };
+    this.setState({ status: tabNameStatus[ tabName ] });
   };
 
   checkTodoItem = id => {
@@ -60,10 +71,28 @@ class App extends Component {
     this.setState({ overLayVisible: true });
   };
 
+  sortByDate = () => {
+    const { todoItems, sortType } = this.state;
+    const newSortType = sortType === 'desc' ? 'asc' : 'desc';
+    const sortingMethods = {
+      desc(a, b) {
+        return a.createdAt - b.createdAt
+      },
+      asc(a, b) {
+        return b.createdAt - a.createdAt
+      }
+    };
+    const sorted = [...todoItems].sort(sortingMethods[newSortType]);
+    this.setState({ todoItems: [...sorted], sortType: newSortType });
+  };
+
   render() {
     const mapToComponent = todoItems => {
       return todoItems
-        .filter(todoItem => todoItem.whatTodo.includes(this.state.searchTerm))
+        .filter(todoItem => {
+          return todoItem.whatTodo.includes(this.state.searchTerm) &&
+            (this.state.status === 0 || todoItem.status === this.state.status);
+        })
         .map((todoItem, key) => (
           <TodoItem
             key={key}
@@ -80,8 +109,8 @@ class App extends Component {
         <Container>
           <Header/>
           <Navigation>
-            <Tabs initialValue={0} tabNames={this.state.tabs}/>
-            <SortButton/>
+            <Tabs initialValue={0} tabNames={this.state.tabs} onClick={this.handleFiltering}/>
+            <SortButton sortType={this.state.sortType} onClick={this.sortByDate}/>
           </Navigation>
           <SearchForm handleSearch={this.handleSearch}/>
           {mapToComponent(this.state.todoItems)}

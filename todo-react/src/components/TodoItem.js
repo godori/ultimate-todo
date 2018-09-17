@@ -36,7 +36,7 @@ const Date = styled.p`
   font-weight: 500;
   line-height: 1.15;
   color: #FD9A9A;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
   ${props => props.completed && css`
     color: #B8B8B8;
     text-decoration: line-through;
@@ -78,15 +78,16 @@ const CheckBox = styled.button`
 `;
 
 const TodoItem = ({ whatTodo, status, startDate, endDate, handleCheck, handleRemove }) => {
+  const isCompleted = status > 0;
   return (
     <Fragment>
       <StyledTodoItem>
         <CheckBox onClick={handleCheck} className={status === 1 && 'active'}/>
         <Content>
-          <WhatTodo completed={status > 0}>{whatTodo}</WhatTodo>
-          <Date completed={status > 0}>{startDate.toLocaleString()} ~ {endDate.toLocaleString()}</Date>
+          <WhatTodo completed={isCompleted}>{whatTodo}</WhatTodo>
+          <Date completed={isCompleted}>{startDate.toLocaleString()} ~ {endDate.toLocaleString()}</Date>
         </Content>
-        <TrashButton completed={status > 0} onClick={handleRemove}/>
+        <TrashButton completed={isCompleted} onClick={handleRemove}/>
       </StyledTodoItem>
     </Fragment>
   );

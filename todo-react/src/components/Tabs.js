@@ -14,6 +14,7 @@ class Tabs extends Component {
   };
 
   handlePaneClick = key => {
+    this.props.onClick(this.props.tabNames[key]);
     this.setState({ activatedPane: key })
   };
 

@@ -15,15 +15,17 @@ const SortIcon = styled.i`
   display: inline-block;
   width: 20px;
   height: 15px;
-  background: url(${Icon});
-  background-size: cover;
+  background: ${props => props.sortType === 'desc' ? '#FD9A9A' : '#222'};
+  mask: url(${Icon});
+  mask-size: cover;
+  cursor: pointer;
 `;
 
-const SortButton = () => {
+const SortButton = ({ sortType, onClick }) => {
   return (
     <Fragment>
       <SortBtn>
-        <SortIcon />
+        <SortIcon sortType={sortType} onClick={onClick}/>
       </SortBtn>
     </Fragment>
   );
