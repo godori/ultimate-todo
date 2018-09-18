@@ -13,25 +13,41 @@ import TodoItem from "./components/TodoItem";
 class App extends Component {
 
   static ID = 0;
-  static todoItem = { id: null, whatTodo: null, status: -1, createdAt: null };
+  static todoItem = { id: null, whatTodo: null, status: -1, startDate: null, endDate: null };
 
-  state = {
-    todoItems: [ { id: 999, whatTodo: '디디 산책시키기', status: -1, createdAt: new Date() } ],
-    tabs: [ 'ALL', 'TODO', 'DONE' ],
-    searchTerm: '',
-    overLayVisible: false,
-    status: 0,
-    sortType: 'desc'
-  };
+  static scanLocalStorage() {
+    const todoItems = Object.keys(localStorage).map(key => JSON.parse(localStorage.getItem(key)));
+    if (todoItems) {
+      todoItems.forEach(todoItem => {
+        todoItem.startDate = todoItem.startDate.toUTCString();
+        todoItem.endDate = todoItem.endDate.toUTCString();
+      });
+    }
+    return todoItems
+  }
+
+  constructor(props) {
+    super(props);
+    const todoItems = App.scanLocalStorage();
+    this.state = {
+      todoItems,
+      tabs: [ 'ALL', 'TODO', 'DONE' ],
+      searchTerm: '',
+      overLayVisible: false,
+      status: 0,
+      sortType: 'desc'
+    };
+  }
 
   addTodoItem = whatTodo => {
     const ID = ++App.ID;
-    const todoItem = { ...App.todoItem, id: ID, whatTodo, createdAt: new Date() };
+    const todoItem = { ...App.todoItem, id: ID, whatTodo, startDate: new Date(), endDate: new Date() };
     localStorage.setItem(ID.toString(), JSON.stringify(todoItem));
     this.setState({ todoItems: [ ...this.state.todoItems, todoItem ] });
   };
 
   removeTodoItem = id => {
+    localStorage.removeItem(id.toString());
     this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.id !== id) ] });
   };
 
@@ -102,8 +118,8 @@ class App extends Component {
             handleRemove={this.removeTodoItem.bind(null, todoItem.id)}
             whatTodo={todoItem.whatTodo}
             status={todoItem.status}
-            startDate={todoItem.createdAt}
-            endDate={todoItem.createdAt}/>
+            startDate={todoItem.startDate}
+            endDate={todoItem.endDate}/>
         ));
     };
     return (

@@ -85,7 +85,7 @@ const TodoItem = ({ whatTodo, status, startDate, endDate, handleCheck, handleRem
         <CheckBox onClick={handleCheck} className={status === 1 && 'active'}/>
         <Content>
           <WhatTodo completed={isCompleted}>{whatTodo}</WhatTodo>
-          <Date completed={isCompleted}>{startDate.toLocaleString()} ~ {endDate.toLocaleString()}</Date>
+          <Date completed={isCompleted}>{startDate.toLocaleString()}<br/>{endDate.toLocaleString()}</Date>
         </Content>
         <TrashButton completed={isCompleted} onClick={handleRemove}/>
       </StyledTodoItem>
