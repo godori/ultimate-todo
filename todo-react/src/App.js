@@ -25,22 +25,27 @@ class App extends Component {
   };
 
   addTodoItem = whatTodo => {
-    const todoItem = { ...App.todoItem, id: ++App.ID, whatTodo, createdAt: new Date() };
+    const ID = ++App.ID;
+    const todoItem = { ...App.todoItem, id: ID, whatTodo, createdAt: new Date() };
+    localStorage.setItem(ID.toString(), JSON.stringify(todoItem));
     this.setState({ todoItems: [ ...this.state.todoItems, todoItem ] });
   };
 
-  handleFormSubmit = e => {
-    const { whatTodo } = e.target.elements;
-    this.addTodoItem(whatTodo.value);
-    whatTodo.value = '';
-    e.preventDefault();
-  };
-
-  handleRemove = id => {
+  removeTodoItem = id => {
     this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.id !== id) ] });
   };
 
-  handleFiltering = tabName => {
+  changeStatusTodoItem = id => {
+    const updated = this.state.todoItems.map(todoItem => {
+      if (todoItem.id === id) {
+        todoItem.status *= -1;
+      }
+      return todoItem;
+    });
+    this.setState({ todoItems: [ ...updated ] });
+  };
+
+  filterTodoItem = tabName => {
     const tabNameStatus = {
       'ALL': 0,
       'TODO': -1,
@@ -49,14 +54,11 @@ class App extends Component {
     this.setState({ status: tabNameStatus[ tabName ] });
   };
 
-  checkTodoItem = id => {
-    const updated = this.state.todoItems.map(todoItem => {
-      if (todoItem.id === id) {
-        todoItem.status *= -1;
-      }
-      return todoItem;
-    });
-    this.setState({ todoItems: [ ...updated ] });
+  handleFormSubmit = e => {
+    const { whatTodo } = e.target.elements;
+    this.addTodoItem(whatTodo.value);
+    whatTodo.value = '';
+    e.preventDefault();
   };
 
   handleSearch = input => {
@@ -96,8 +98,8 @@ class App extends Component {
         .map((todoItem, key) => (
           <TodoItem
             key={key}
-            handleCheck={this.checkTodoItem.bind(null, todoItem.id)}
-            handleRemove={this.handleRemove.bind(null, todoItem.id)}
+            handleCheck={this.changeStatusTodoItem.bind(null, todoItem.id)}
+            handleRemove={this.removeTodoItem.bind(null, todoItem.id)}
             whatTodo={todoItem.whatTodo}
             status={todoItem.status}
             startDate={todoItem.createdAt}
@@ -109,7 +111,7 @@ class App extends Component {
         <Container>
           <Header/>
           <Navigation>
-            <Tabs initialValue={0} tabNames={this.state.tabs} onClick={this.handleFiltering}/>
+            <Tabs initialValue={0} tabNames={this.state.tabs} onClick={this.filterTodoItem}/>
             <SortButton sortType={this.state.sortType} onClick={this.sortByDate}/>
           </Navigation>
           <SearchForm handleSearch={this.handleSearch}/>
