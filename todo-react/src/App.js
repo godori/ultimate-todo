@@ -45,7 +45,7 @@ class App extends Component {
       'ALL': 0,
       'TODO': -1,
       'DONE': 1
-  };
+    };
     this.setState({ status: tabNameStatus[ tabName ] });
   };
 
