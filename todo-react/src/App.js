@@ -9,18 +9,21 @@ import AddTodoOverlay from "./components/AddTodoOverlay";
 import Container from "./components/Container";
 import TodoItem from "./components/TodoItem";
 
+import dateFns from 'date-fns';
+import koLocale from "date-fns/locale/ko";
 
 class App extends Component {
 
   static ID = 0;
   static todoItem = { id: null, whatTodo: null, status: -1, startDate: null, endDate: null };
+  static dateFormat = 'YYYY-MM-DD HH:mm:ss';
 
   static scanLocalStorage() {
     const todoItems = Object.keys(localStorage).map(key => JSON.parse(localStorage.getItem(key)));
     if (todoItems) {
       todoItems.forEach(todoItem => {
-        todoItem.startDate = todoItem.startDate.toUTCString();
-        todoItem.endDate = todoItem.endDate.toUTCString();
+        todoItem.startDate = dateFns.format(dateFns.parse(todoItem.startDate), App.dateFormat);
+        todoItem.endDate = dateFns.format(dateFns.parse(todoItem.endDate), App.dateFormat);
       });
     }
     return todoItems
@@ -41,7 +44,8 @@ class App extends Component {
 
   addTodoItem = whatTodo => {
     const ID = ++App.ID;
-    const todoItem = { ...App.todoItem, id: ID, whatTodo, startDate: new Date(), endDate: new Date() };
+    const now = dateFns.format(new Date(), App.dateFormat, koLocale);
+    const todoItem = { ...App.todoItem, id: ID, whatTodo, startDate: now, endDate: now };
     localStorage.setItem(ID.toString(), JSON.stringify(todoItem));
     this.setState({ todoItems: [ ...this.state.todoItems, todoItem ] });
   };
