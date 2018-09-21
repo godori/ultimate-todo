@@ -11,31 +11,38 @@ import TodoItem from "./components/TodoItem";
 
 import dateFns from 'date-fns';
 import koLocale from "date-fns/locale/ko";
+import TodoDB from './scripts/todoDatabase';
 
 class App extends Component {
 
-  static ID = 0;
-  static todoItem = { id: null, whatTodo: null, status: -1, startDate: null, endDate: null };
+  static todoItem = { whatTodo: null, status: -1, startDate: null, endDate: null };
   static dateFormat = 'YYYY-MM-DD HH:mm:ss';
-  static DATABASE = 'TODO_APP';
-  static STORENAME = 'TODO';
-  static DB_VERSION = 1;
-  static IDB;
+  state = {
+    todoItems: [],
+    tabs: [ 'ALL', 'TODO', 'DONE' ],
+    searchTerm: '',
+    overLayVisible: false,
+    status: 0,
+    sortType: 'desc',
+    db: new TodoDB()
+  };
 
   addTodoItem = whatTodo => {
-    const ID = ++App.ID;
     const now = dateFns.format(new Date(), App.dateFormat, koLocale);
-    const todoItem = { ...App.todoItem, id: ID, whatTodo, startDate: now, endDate: now };
-    localStorage.setItem(ID.toString(), JSON.stringify(todoItem));
-    this.setState({ todoItems: [ ...this.state.todoItems, todoItem ] });
+    const todoItem = { ...App.todoItem, whatTodo, startDate: now, endDate: now };
+    this.state.db.addTodo(result => {
+      this.setState({ todoItems: [ ...this.state.todoItems, { ...todoItem, ID: result } ] });
+    }, todoItem);
   };
+
   removeTodoItem = id => {
     localStorage.removeItem(id.toString());
-    this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.id !== id) ] });
+    this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.ID !== id) ] });
   };
+
   changeStatusTodoItem = id => {
     const updated = this.state.todoItems.map(todoItem => {
-      if (todoItem.id === id) {
+      if (todoItem.ID === id) {
         todoItem.status *= -1;
       }
       return todoItem;
@@ -69,48 +76,12 @@ class App extends Component {
     const { todoItems, sortType } = this.state;
     const newSortType = sortType === 'desc' ? 'asc' : 'desc';
     const sortingMethods = {
-      desc(a, b) {
-        return a.createdAt - b.createdAt;
-      },
-      asc(a, b) {
-        return b.createdAt - a.createdAt;
-      }
+      desc: (a, b) => a.startDate - b.startDate,
+      asc: (a, b) => b.startDate - a.startDate
     };
     const sorted = [ ...todoItems ].sort(sortingMethods[ newSortType ]);
     this.setState({ todoItems: [ ...sorted ], sortType: newSortType });
   };
-
-  asyncEvent = async () => {
-    fetch('https://httpbin.org/get').then(res => {
-      const div = document.createElement('div');
-      div.innerText = JSON.stringify(res);
-      document.body.appendChild(div)
-    })
-  };
-
-  constructor(props) {
-    super(props);
-    const todoItems = App.scanLocalStorage();
-    this.state = {
-      todoItems,
-      tabs: [ 'ALL', 'TODO', 'DONE' ],
-      searchTerm: '',
-      overLayVisible: false,
-      status: 0,
-      sortType: 'desc'
-    };
-  }
-
-  static scanLocalStorage() {
-    const todoItems = Object.keys(localStorage).map(key => JSON.parse(localStorage.getItem(key)));
-    if (todoItems) {
-      todoItems.forEach(todoItem => {
-        todoItem.startDate = dateFns.format(dateFns.parse(todoItem.startDate), App.dateFormat);
-        todoItem.endDate = dateFns.format(dateFns.parse(todoItem.endDate), App.dateFormat);
-      });
-    }
-    return todoItems;
-  }
 
   render() {
     const mapToComponent = todoItems => {
@@ -122,8 +93,8 @@ class App extends Component {
         .map((todoItem, key) => (
           <TodoItem
             key={key}
-            handleCheck={this.changeStatusTodoItem.bind(null, todoItem.id)}
-            handleRemove={this.removeTodoItem.bind(null, todoItem.id)}
+            handleCheck={this.changeStatusTodoItem.bind(null, todoItem.ID)}
+            handleRemove={this.removeTodoItem.bind(null, todoItem.ID)}
             whatTodo={todoItem.whatTodo}
             status={todoItem.status}
             startDate={todoItem.startDate}
@@ -145,7 +116,6 @@ class App extends Component {
             visible={this.state.overLayVisible}
             onClose={this.hideOverLay}
             onSubmit={this.handleFormSubmit}/>
-          <button onClick={this.asyncEvent}/>
         </Container>
       </Fragment>
     );
