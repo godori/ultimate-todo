@@ -18,28 +18,24 @@ class App extends Component {
   static todoItem = { whatTodo: null, status: -1, startDate: null, endDate: null };
   static dateFormat = 'YYYY-MM-DD HH:mm:ss';
   state = {
+    IDB: Object.create(TodoDB),
+    IDBRequest: null,
     todoItems: [],
     tabs: [ 'ALL', 'TODO', 'DONE' ],
     searchTerm: '',
     overLayVisible: false,
     status: 0,
     sortType: 'desc',
-    db: new TodoDB()
   };
-
   addTodoItem = whatTodo => {
     const now = dateFns.format(new Date(), App.dateFormat, koLocale);
     const todoItem = { ...App.todoItem, whatTodo, startDate: now, endDate: now };
-    this.state.db.addTodo(result => {
-      this.setState({ todoItems: [ ...this.state.todoItems, { ...todoItem, ID: result } ] });
-    }, todoItem);
+    this.state.IDB.addTodo(this.state.IDBRequest, todoItem).then(res => console.log(res));
   };
-
   removeTodoItem = id => {
     localStorage.removeItem(id.toString());
     this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.ID !== id) ] });
   };
-
   changeStatusTodoItem = id => {
     const updated = this.state.todoItems.map(todoItem => {
       if (todoItem.ID === id) {
@@ -81,6 +77,16 @@ class App extends Component {
     };
     const sorted = [ ...todoItems ].sort(sortingMethods[ newSortType ]);
     this.setState({ todoItems: [ ...sorted ], sortType: newSortType });
+  };
+
+  constructor(props) {
+    super(props);
+    this.state.IDB.init().then(request => this.setState({ IDBRequest: request }));
+  }
+
+  // 이렇게 해야만 된다... 왜?
+  static scanTodoItemsFromIDB(result) {
+    this.setState({ todoItems: result });
   };
 
   render() {
