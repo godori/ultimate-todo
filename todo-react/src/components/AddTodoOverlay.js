@@ -1,5 +1,11 @@
 import React, { Component, Fragment } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+import { SingleDatePicker } from 'react-dates';
+import 'react-dates/initialize';
+import 'react-dates/lib/css/_datepicker.css';
+import '../styles/date-picker-overrides.css';
+import closeButtonImage from '../static/images/x.svg';
+import moment from "moment";
 
 const Overlay = styled.div`
   position: fixed;
@@ -11,9 +17,47 @@ const Overlay = styled.div`
   display: ${props => props.visible ? 'block' : 'none'};
 `;
 
+const InnerWrapper = styled.main`
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 960px;
+  height: 100vh;
+  margin: 0 auto;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  background-color: transparent;
+  border: none;
+  top: 30px;
+  right: -10px;
+  cursor: pointer;
+  transition: all 100ms ease-in-out;
+  
+  &:hover {
+    filter: drop-shadow(1px 1px 2px rgba(0,255,226,.8)); 
+  }
+  
+  &:focus {
+    outline: none;
+  }
+`;
+
+const CloseButtonIcon = styled.i`
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  background-color: #00FFE2;
+  mask: url(${closeButtonImage});
+  mask-size: cover;
+  
+`;
+
+
 const Form = styled.form`
   display: block;
-  width: 87%;
+  width: 100%;
   border-bottom: solid 2px #00ffe2;
   padding-bottom: 14.5px;
   
@@ -25,6 +69,12 @@ const Form = styled.form`
   transform: translate(-50%, -50%);
 `;
 
+const InnerFormContainer = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+
 const Label = styled.label`
   display: block;
   margin-bottom: 28px;
@@ -34,15 +84,15 @@ const Label = styled.label`
 `;
 
 const Input = styled.input`
-  float: left;
+  flex-grow: 3;
   font-size: 18px;
   font-weight: 500;
   color: #FFF;
-  width: 72%;
-  height: 22px;
   border: none;
   background: transparent;
   margin-right: 20px;
+  padding-bottom: 2px;
+  align-self: stretch;
   
   &::placeholder {
     color: #696969;
@@ -54,7 +104,6 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  float: right;
   font-size: 18px;
   font-weight: 600;
   color: #00FFE2;
@@ -66,13 +115,84 @@ const Button = styled.button`
   }
 `;
 
+const PresetButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-around;
+  padding: 15px 15px 0;
+`;
+
+const PresetButton = styled.button`
+  border: none;
+  background-color: transparent;
+  font-size: 14px;
+  font-weight: 200;
+  ${props => props.isSelected && css`
+    color: #0DA598;
+    font-weight: 600;
+  `}
+  
+  &:hover {
+    color: #0DA598;
+    transition: color 250ms ease;
+  }
+  
+  &:focus {
+    outline: none;
+  }
+`;
 
 class AddTodoOverlay extends Component {
 
   _input = null;
+
+  state = {
+    focused: this.props.autoFocus,
+    date: this.props.initialDate,
+    presets: [
+      {text: 'Today', date: moment()},
+      {text: 'Tomorrow', date: moment().add(1, 'days')},
+      {text: 'Next Week', date: moment().add(7, 'days')},
+      {text: 'Next Month', date: moment().add(1, 'months')}
+    ]
+  };
+
   handleFormClick = e => {
     e.stopPropagation();
   };
+
+  handleDateChange = date => {
+    this.setState({date});
+  };
+
+  handleFocusChange = ({focused}) => {
+    this.setState({focused});
+  };
+
+  renderDatePresets = () => {
+    return (
+      <PresetButtonContainer>
+        {
+          this.state.presets.map(preset => (
+            <PresetButton
+              key={preset.text}
+              isSelected={AddTodoOverlay.isSameDate(this.state.date, preset.date)}
+              onClick={this.handleDateChange.bind(null, preset.date)}>
+              {preset.text}
+            </PresetButton>
+          ))
+        }
+      </PresetButtonContainer>
+    );
+  };
+
+  static isSameDate(origin, toCompare) {
+    if (!moment.isMoment(origin) || !moment.isMoment(toCompare)) {
+      return false;
+    }
+    return origin.date() === toCompare.date()
+      && origin.month() === toCompare.month()
+      && origin.year() === toCompare.year();
+  }
 
   componentWillMount() {
     document.addEventListener('keydown', e => {
@@ -85,24 +205,49 @@ class AddTodoOverlay extends Component {
   }
 
   render() {
-    const { onClose, onSubmit } = this.props;
+    const {onClose, onSubmit} = this.props;
+    const {date, focused} = this.state;
     return (
       <Fragment>
         <Overlay visible={this.props.visible} onClick={onClose}>
-          <Form onClick={this.handleFormClick} onSubmit={onSubmit}>
-            <Label>What's next?</Label>
-            <Input
-              type="text"
-              name="whatTodo"
-              ref={ref => this._input = ref}
-              placeholder="내일 오후 3시까지 우체국 가기"
-              autoFocus={true}/>
-            <Button type="submit">ADD</Button>
-          </Form>
+          <InnerWrapper>
+            <CloseButton onClick={onClose}><CloseButtonIcon/></CloseButton>
+            <Form onClick={this.handleFormClick} onSubmit={onSubmit}>
+              <Label>What's next?</Label>
+              <InnerFormContainer>
+                <Input
+                  type="text"
+                  id="whatTodo"
+                  ref={ref => this._input = ref}
+                  placeholder="내일 오후 3시까지 우체국 가기"
+                  autoFocus={true}/>
+                <SingleDatePicker
+                  date={date}
+                  renderCalendarInfo={this.renderDatePresets}
+                  displayFormat="YYYY-MM-DD"
+                  onDateChange={this.handleDateChange}
+                  focused={focused}
+                  onFocusChange={this.handleFocusChange}
+                  numberOfMonths={2}
+                  monthFormat="YYYY. MM"
+                  weekDayFormat="ddd"
+                  calendarInfoPosition="top"
+                  horizontalMonthPadding={10}
+                  id="date"
+                />
+                <Button type="submit">ADD</Button>
+              </InnerFormContainer>
+            </Form>
+          </InnerWrapper>
         </Overlay>
       </Fragment>
     );
   }
 }
+
+AddTodoOverlay.defaultProps = {
+  autoFocus: false,
+  initialDate: moment(),
+};
 
 export default AddTodoOverlay;
