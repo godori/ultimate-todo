@@ -18,8 +18,8 @@ class App extends Component {
   static todoItem = { whatTodo: null, status: -1, startDate: null, endDate: null };
   static dateFormat = 'YYYY-MM-DD HH:mm:ss';
   state = {
-    IDB: Object.create(TodoDB),
-    IDBRequest: null,
+    TODO_DB: Object.create(TodoDB),
+    IDB: null,
     todoItems: [],
     tabs: [ 'ALL', 'TODO', 'DONE' ],
     searchTerm: '',
@@ -27,15 +27,24 @@ class App extends Component {
     status: 0,
     sortType: 'desc',
   };
+
   addTodoItem = whatTodo => {
     const now = dateFns.format(new Date(), App.dateFormat, koLocale);
-    const todoItem = { ...App.todoItem, whatTodo, startDate: now, endDate: now };
-    this.state.IDB.addTodo(this.state.IDBRequest, todoItem).then(res => console.log(res));
+    let todoItem = { ...App.todoItem, whatTodo, startDate: now, endDate: now };
+    this.state.TODO_DB.addTodo(this.state.IDB, todoItem)
+      .then(res => {
+        todoItem = { ...todoItem, ID: res };
+        this.setState({ todoItems: [ ...this.state.todoItems, todoItem ] });
+      })
+      .catch(err => console.error(err));
   };
+
   removeTodoItem = id => {
-    localStorage.removeItem(id.toString());
-    this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.ID !== id) ] });
+    this.state.TODO_DB.removeTodo(this.state.IDB, id)
+      .then(res => this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.ID !== id) ] }))
+      .catch(err => console.error(err));
   };
+
   changeStatusTodoItem = id => {
     const updated = this.state.todoItems.map(todoItem => {
       if (todoItem.ID === id) {
@@ -79,15 +88,32 @@ class App extends Component {
     this.setState({ todoItems: [ ...sorted ], sortType: newSortType });
   };
 
-  constructor(props) {
-    super(props);
-    this.state.IDB.init().then(request => this.setState({ IDBRequest: request }));
+  componentDidMount() {
+    this.state.TODO_DB.init().then(DB => {
+      this.setState({ IDB: DB });
+      const { STORE_NAME } = this.state.TODO_DB;
+      const tx = DB.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const scanKeys = store.getAllKeys();
+      scanKeys.onsuccess = scanKeysEvent => {
+        const { result } = scanKeysEvent.target;
+        if (!result.length) {
+          return;
+        }
+        const start = [...result].shift();
+        const end = [...result].pop();
+        const scan = store.getAll(IDBKeyRange.bound(start, end));
+        scan.onsuccess = scanEvent => {
+          const todoItems = scanEvent.target.result.map((value, key) => {
+            const ID = scanKeysEvent.target.result[key];
+            return { ...value, ID };
+          });
+          this.setState({ todoItems });
+        };
+      };
+      scanKeys.onerror = error => console.error(error);
+    });
   }
-
-  // 이렇게 해야만 된다... 왜?
-  static scanTodoItemsFromIDB(result) {
-    this.setState({ todoItems: result });
-  };
 
   render() {
     const mapToComponent = todoItems => {
@@ -116,7 +142,7 @@ class App extends Component {
             <SortButton sortType={this.state.sortType} onClick={this.sortByDate}/>
           </Navigation>
           <SearchForm handleSearch={this.handleSearch}/>
-          {mapToComponent(this.state.todoItems)}
+          {this.state.todoItems && mapToComponent(this.state.todoItems)}
           <FloatPlusButton onClick={this.showOverLay}/>
           <AddTodoOverlay
             visible={this.state.overLayVisible}

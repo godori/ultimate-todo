@@ -93,7 +93,7 @@ class SearchForm extends React.Component {
             onKeyUp={this.handleInput}
             onKeyDown={this.handleInput}
             ref={ref => this._input = ref}
-            contentEditable="true"
+            contentEditable
             placeholder="Search for tasks"/>
           <DeleteIcon onClick={this.clearInputField}/>
         </Form>

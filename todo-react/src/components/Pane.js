@@ -4,6 +4,7 @@ import styled from "styled-components";
 
 const TabContainer = styled.li`
   display: inline-block;
+  position: relative;
   margin-right: 23px;
   font-family: SFCompactText, sans-serif;
   font-size: 16px;
@@ -20,7 +21,15 @@ const StyledPane = styled.a`
   color: #B8B8B8;
   transition: color 100ms ease-in-out;
   
-  &:after {
+  &.active {
+    color: #000000;
+  }
+  
+  &:hover {
+    color: #000000;
+  }
+  
+  &.active:after {
     content: '';
     display: block;
     width: 100%;
@@ -28,15 +37,6 @@ const StyledPane = styled.a`
     bottom: -15px;
     left: 0;
     border-bottom: 2px solid #000;
-  }
-  
-  &:hover {
-    color: #000000;
-  }
-  
-  &.active {
-    position: relative;
-    color: #000000;
   }
 `;
 
