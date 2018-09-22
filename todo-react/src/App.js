@@ -9,9 +9,8 @@ import AddTodoOverlay from "./components/AddTodoOverlay";
 import Container from "./components/Container";
 import TodoItem from "./components/TodoItem";
 
-import dateFns from 'date-fns';
-import koLocale from "date-fns/locale/ko";
 import TodoDB from './scripts/todoDatabase';
+import moment from "moment";
 
 class App extends Component {
 
@@ -29,7 +28,7 @@ class App extends Component {
   };
 
   addTodoItem = whatTodo => {
-    const now = dateFns.format(new Date(), App.dateFormat, koLocale);
+    const now = moment().format(App.dateFormat);
     let todoItem = { ...App.todoItem, whatTodo, startDate: now, endDate: now };
     this.state.TODO_DB.addTodo(this.state.IDB, todoItem)
       .then(res => {
@@ -54,6 +53,7 @@ class App extends Component {
     });
     this.setState({ todoItems: [ ...updated ] });
   };
+
   filterTodoItem = tabName => {
     const tabNameStatus = {
       'ALL': 0,
@@ -62,21 +62,26 @@ class App extends Component {
     };
     this.setState({ status: tabNameStatus[ tabName ] });
   };
+
   handleFormSubmit = e => {
     const { whatTodo } = e.target.elements;
     this.addTodoItem(whatTodo.value);
     whatTodo.value = '';
     e.preventDefault();
   };
+
   handleSearch = input => {
     this.setState({ searchTerm: input });
   };
+
   hideOverLay = () => {
     this.setState({ overLayVisible: false });
   };
+
   showOverLay = () => {
     this.setState({ overLayVisible: true });
   };
+
   sortByDate = () => {
     const { todoItems, sortType } = this.state;
     const newSortType = sortType === 'desc' ? 'asc' : 'desc';
@@ -100,12 +105,12 @@ class App extends Component {
         if (!result.length) {
           return;
         }
-        const start = [...result].shift();
-        const end = [...result].pop();
+        const start = [ ...result ].shift();
+        const end = [ ...result ].pop();
         const scan = store.getAll(IDBKeyRange.bound(start, end));
         scan.onsuccess = scanEvent => {
           const todoItems = scanEvent.target.result.map((value, key) => {
-            const ID = scanKeysEvent.target.result[key];
+            const ID = scanKeysEvent.target.result[ key ];
             return { ...value, ID };
           });
           this.setState({ todoItems });

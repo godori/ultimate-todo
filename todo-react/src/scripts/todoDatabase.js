@@ -24,11 +24,11 @@ const TodoDB = {
   prepare(IDB) {
     const tx = IDB.transaction(this.STORE_NAME, 'readwrite');
     const store = tx.objectStore(this.STORE_NAME);
-    return { tx, store };
+    return store
   },
 
   async addTodo(IDB, todoItem) {
-    const { tx, store } = this.prepare(IDB);
+    const store = this.prepare(IDB);
     const save = await store.put(todoItem);
     return new Promise((resolve, reject) => {
       save.onsuccess = event => resolve(event.target.result);
@@ -37,7 +37,7 @@ const TodoDB = {
   },
 
   async removeTodo(IDB, ID) {
-    const { tx, store } = this.prepare(IDB);
+    const store = this.prepare(IDB);
     const remove = await store.delete(ID);
     return new Promise((resolve, reject) => {
       remove.onsuccess = event => resolve(event.target.result);
