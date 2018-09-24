@@ -178,7 +178,7 @@ class TodoItem extends React.Component {
   };
 
   componentDidMount() {
-    document.querySelector("input#todoItem").setAttribute("readonly", "readonly");
+    document.querySelectorAll("input#todoItem").forEach($el => $el.setAttribute("readonly", "readonly"));
   }
 
   render() {
