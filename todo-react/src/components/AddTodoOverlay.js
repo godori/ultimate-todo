@@ -1,8 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import styled, { css } from 'styled-components';
 import { SingleDatePicker } from 'react-dates';
-import 'react-dates/initialize';
-import 'react-dates/lib/css/_datepicker.css';
 import '../styles/date-picker-overrides.css';
 import closeButtonImage from '../static/images/x.svg';
 import moment from "moment";
@@ -20,8 +18,8 @@ const Overlay = styled.div`
 const InnerWrapper = styled.main`
   position: relative;
   display: block;
-  width: 100%;
-  max-width: 960px;
+  width: 85%;
+  max-width: 1200px;
   height: 100vh;
   margin: 0 auto;
 `;
@@ -51,48 +49,41 @@ const CloseButtonIcon = styled.i`
   background-color: #00FFE2;
   mask: url(${closeButtonImage});
   mask-size: cover;
-  
 `;
-
 
 const Form = styled.form`
   display: block;
   width: 100%;
-  border-bottom: solid 2px #00ffe2;
-  padding-bottom: 14.5px;
-  
   font-family: SFCompactText, sans-serif;
-  
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  border-bottom: solid 2px #00ffe2;
+  padding-bottom: 12px;
 `;
 
 const InnerFormContainer = styled.div`
   display: flex;
+  justify-content: space-around;
   align-items: center;
 `;
-
 
 const Label = styled.label`
   display: block;
   margin-bottom: 28px;
   color: #00FFE2;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 300;  
 `;
 
 const Input = styled.input`
-  flex-grow: 3;
-  font-size: 18px;
-  font-weight: 500;
-  color: #FFF;
+  flex-grow: 4;
   border: none;
+  font-weight: 500;
+  font-size: 14px;
+  color: #FFF;
   background: transparent;
-  margin-right: 20px;
-  padding-bottom: 2px;
-  align-self: stretch;
   
   &::placeholder {
     color: #696969;
@@ -104,11 +95,12 @@ const Input = styled.input`
 `;
 
 const Button = styled.button`
-  font-size: 18px;
   font-weight: 600;
   color: #00FFE2;
   border: none;
   background: none;
+  font-size: 14px;
+  padding: 0;
   
   &:focus {
     outline: none;
@@ -121,11 +113,11 @@ const PresetButtonContainer = styled.div`
   padding: 15px 15px 0;
 `;
 
-const PresetButton = styled.button`
+const PresetButton = styled.a`
   border: none;
   background-color: transparent;
-  font-size: 14px;
   font-weight: 200;
+  letter-spacing: -0.5px;
   ${props => props.isSelected && css`
     color: #0DA598;
     font-weight: 600;
@@ -149,10 +141,10 @@ class AddTodoOverlay extends Component {
     focused: this.props.autoFocus,
     date: this.props.initialDate,
     presets: [
-      {text: 'Today', date: moment()},
-      {text: 'Tomorrow', date: moment().add(1, 'days')},
-      {text: 'Next Week', date: moment().add(7, 'days')},
-      {text: 'Next Month', date: moment().add(1, 'months')}
+      { text: 'Today', date: moment() },
+      { text: 'Tomorrow', date: moment().add(1, 'days') },
+      { text: 'Next Week', date: moment().add(7, 'days') },
+      { text: 'Next Month', date: moment().add(1, 'months') }
     ]
   };
 
@@ -161,11 +153,11 @@ class AddTodoOverlay extends Component {
   };
 
   handleDateChange = date => {
-    this.setState({date});
+    this.setState({ date });
   };
 
-  handleFocusChange = ({focused}) => {
-    this.setState({focused});
+  handleFocusChange = ({ focused }) => {
+    this.setState({ focused });
   };
 
   renderDatePresets = () => {
@@ -175,7 +167,7 @@ class AddTodoOverlay extends Component {
           this.state.presets.map(preset => (
             <PresetButton
               key={preset.text}
-              isSelected={AddTodoOverlay.isSameDate(this.state.date, preset.date)}
+              isSelected={this.state.date.isSame(preset.date, 'date')}
               onClick={this.handleDateChange.bind(null, preset.date)}>
               {preset.text}
             </PresetButton>
@@ -184,15 +176,6 @@ class AddTodoOverlay extends Component {
       </PresetButtonContainer>
     );
   };
-
-  static isSameDate(origin, toCompare) {
-    if (!moment.isMoment(origin) || !moment.isMoment(toCompare)) {
-      return false;
-    }
-    return origin.date() === toCompare.date()
-      && origin.month() === toCompare.month()
-      && origin.year() === toCompare.year();
-  }
 
   componentWillMount() {
     document.addEventListener('keydown', e => {
@@ -205,8 +188,8 @@ class AddTodoOverlay extends Component {
   }
 
   render() {
-    const {onClose, onSubmit} = this.props;
-    const {date, focused} = this.state;
+    const { onClose, onSubmit } = this.props;
+    const { date, focused } = this.state;
     return (
       <Fragment>
         <Overlay visible={this.props.visible} onClick={onClose}>
@@ -219,6 +202,7 @@ class AddTodoOverlay extends Component {
                   type="text"
                   id="whatTodo"
                   ref={ref => this._input = ref}
+                  autoComplete="off"
                   placeholder="내일 오후 3시까지 우체국 가기"
                   autoFocus={true}/>
                 <SingleDatePicker
@@ -228,7 +212,7 @@ class AddTodoOverlay extends Component {
                   onDateChange={this.handleDateChange}
                   focused={focused}
                   onFocusChange={this.handleFocusChange}
-                  numberOfMonths={2}
+                  numberOfMonths={1}
                   monthFormat="YYYY. MM"
                   weekDayFormat="ddd"
                   calendarInfoPosition="top"

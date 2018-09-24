@@ -14,13 +14,13 @@ import moment from "moment";
 
 class App extends Component {
 
-  static todoItem = {whatTodo: null, status: -1, startDate: null, endDate: null};
+  static todoItem = { ID: null, whatTodo: null, status: -1, startDate: null, endDate: null };
   static dateFormat = 'YYYY-MM-DD';
   state = {
     TODO_DB: Object.create(TodoDB),
     IDB: null,
     todoItems: [],
-    tabs: ['ALL', 'TODO', 'DONE'],
+    tabs: [ 'ALL', 'TODO', 'DONE' ],
     searchTerm: '',
     overLayVisible: false,
     currentFilteredStatus: 0,
@@ -28,29 +28,63 @@ class App extends Component {
   };
 
   addTodoItem = (whatTodo, endDate) => {
-    let todoItem = {...App.todoItem, whatTodo, startDate: moment().format(App.dateFormat), endDate};
+    let todoItem = { ...App.todoItem, whatTodo, startDate: moment().format(App.dateFormat), endDate };
     this.state.TODO_DB.addTodo(this.state.IDB, todoItem)
       .then(res => {
-        todoItem = {...todoItem, ID: res};
-        this.setState({todoItems: [...this.state.todoItems, todoItem]});
+        todoItem = { ...todoItem, ID: res };
+        this.state.TODO_DB.updateTodo(this.state.IDB, todoItem, res);
+        this.setState({ todoItems: [ ...this.state.todoItems, todoItem ] });
       })
       .catch(err => console.error(err));
   };
 
-  removeTodoItem = id => {
-    this.state.TODO_DB.removeTodo(this.state.IDB, id)
-      .then(res => this.setState({todoItems: [...this.state.todoItems.filter(todoItem => todoItem.ID !== id)]}))
+  changeTodoText = (ID, event) => {
+    if (event.type === 'blur') {
+      const text = event.target.value;
+      const todoItems = this.state.todoItems.map(todoItem => {
+        if (todoItem.ID === ID) {
+          todoItem.whatTodo = text;
+        }
+        this.state.TODO_DB.updateTodo(this.state.IDB, todoItem, ID);
+        return todoItem;
+      });
+      this.setState({ todoItems });
+    }
+  };
+
+  removeTodoItem = ID => {
+    this.state.TODO_DB.removeTodo(this.state.IDB, ID)
+      .then(res => this.setState({ todoItems: [ ...this.state.todoItems.filter(todoItem => todoItem.ID !== ID) ] }))
       .catch(err => console.error(err));
   };
 
-  changeStatusTodoItem = id => {
-    const updated = this.state.todoItems.map(todoItem => {
-      if (todoItem.ID === id) {
-        todoItem.currentFilteredStatus *= -1;
+  changeStatusTodoItem = ID => {
+    const todoItems = this.state.todoItems.map(todoItem => {
+      if (todoItem.ID === ID) {
+        todoItem.status *= -1;
+      }
+      this.state.TODO_DB.updateTodo(this.state.IDB, todoItem, ID);
+      return todoItem;
+    });
+    this.setState({ todoItems });
+
+  };
+
+  changeTodoDate = (ID, dateType, date) => {
+    const todoItems = this.state.todoItems.map(todoItem => {
+      if (todoItem.ID === ID) {
+        const isFutureOfEndDate = dateType === 'startDate' && date.isAfter(moment(todoItem.endDate), 'date');
+        if (isFutureOfEndDate) {
+          alert('휴먼...미래에서 왔습니까? 🐶');
+          return todoItem;
+        }
+        todoItem[ dateType ] = moment(date).format(App.dateFormat);
+        this.state.TODO_DB.updateTodo(this.state.IDB, todoItem, ID);
       }
       return todoItem;
     });
-    this.setState({todoItems: [...updated]});
+    this.setState({ todoItems });
+    this.sortByDate(this.state.sortType);
   };
 
   filterTodoItem = tabName => {
@@ -59,7 +93,7 @@ class App extends Component {
       'TODO': -1,
       'DONE': 1
     };
-    this.setState({currentFilteredStatus: tabNameStatus[tabName]});
+    this.setState({ currentFilteredStatus: tabNameStatus[ tabName ] });
   };
 
   handleFormSubmit = event => {
@@ -71,49 +105,49 @@ class App extends Component {
   };
 
   handleSearch = input => {
-    this.setState({searchTerm: input});
+    this.setState({ searchTerm: input });
   };
 
   hideOverLay = () => {
-    this.setState({overLayVisible: false});
+    this.setState({ overLayVisible: false });
   };
 
   showOverLay = () => {
-    this.setState({overLayVisible: true});
+    this.setState({ overLayVisible: true });
   };
 
-  sortByDate = () => {
-    const {todoItems, sortType} = this.state;
-    const newSortType = sortType === 'desc' ? 'asc' : 'desc';
+  sortByDate = (defaultSortType = null) => {
+    const { todoItems, sortType } = this.state;
+    const newSortType = defaultSortType || (sortType === 'desc' ? 'asc' : 'desc');
     const sortingMethods = {
-      desc: (a, b) => a.startDate - b.startDate,
-      asc: (a, b) => b.startDate - a.startDate
+      desc: (a, b) => moment(a.endDate) - moment(b.endDate),
+      asc: (a, b) => moment(b.endDate) - moment(a.endDate)
     };
-    const sorted = [...todoItems].sort(sortingMethods[newSortType]);
-    this.setState({todoItems: [...sorted], sortType: newSortType});
+    const sorted = [ ...todoItems ].sort(sortingMethods[ newSortType ]);
+    this.setState({ todoItems: [ ...sorted ], sortType: newSortType });
   };
 
   componentDidMount() {
     this.state.TODO_DB.init().then(DB => {
-      this.setState({IDB: DB});
-      const {STORE_NAME} = this.state.TODO_DB;
+      this.setState({ IDB: DB });
+      const { STORE_NAME } = this.state.TODO_DB;
       const tx = DB.transaction(STORE_NAME, 'readonly');
       const store = tx.objectStore(STORE_NAME);
       const scanKeys = store.getAllKeys();
       scanKeys.onsuccess = scanKeysEvent => {
-        const {result} = scanKeysEvent.target;
+        const { result } = scanKeysEvent.target;
         if (!result.length) {
           return;
         }
-        const start = [...result].shift();
-        const end = [...result].pop();
+        const start = [ ...result ].shift();
+        const end = [ ...result ].pop();
         const scan = store.getAll(IDBKeyRange.bound(start, end));
         scan.onsuccess = scanEvent => {
           const todoItems = scanEvent.target.result.map((value, key) => {
-            const ID = scanKeysEvent.target.result[key];
-            return {...value, ID};
+            const ID = scanKeysEvent.target.result[ key ];
+            return { ...value, ID };
           });
-          this.setState({todoItems});
+          this.setState({ todoItems });
         };
       };
       scanKeys.onerror = error => console.error(error);
@@ -125,15 +159,17 @@ class App extends Component {
       return todoItems
         .filter(todoItem => {
           return todoItem.whatTodo.includes(this.state.searchTerm) &&
-            (this.state.currentFilteredStatus === 0 || todoItem.currentFilteredStatus === this.state.currentFilteredStatus);
+            (this.state.currentFilteredStatus === 0 || todoItem.status === this.state.currentFilteredStatus);
         })
-        .map((todoItem, key) => (
+        .map(todoItem => (
           <TodoItem
-            key={key}
+            key={todoItem.ID}
             handleCheck={this.changeStatusTodoItem.bind(null, todoItem.ID)}
+            handleTextEdit={this.changeTodoText.bind(null, todoItem.ID)}
+            handleDateEdit={this.changeTodoDate.bind(null, todoItem.ID)}
             handleRemove={this.removeTodoItem.bind(null, todoItem.ID)}
             whatTodo={todoItem.whatTodo}
-            status={todoItem.currentFilteredStatus}
+            status={todoItem.status}
             startDate={todoItem.startDate}
             endDate={todoItem.endDate}/>
         ));

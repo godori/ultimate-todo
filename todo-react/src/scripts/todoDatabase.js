@@ -3,18 +3,13 @@ const TodoDB = {
   STORE_NAME: 'TODO',
   VERSION: 1,
 
-  IDB: null,
-  Store: null,
-  Index: null,
-  request: null,
-
   async init() {
     this.request = await indexedDB.open(this.DB_NAME, this.VERSION);
     return new Promise(((resolve, reject) => {
       this.request.onupgradeneeded = event => {
-        this.IDB = this.request.result;
-        this.Store = this.IDB.createObjectStore(this.STORE_NAME, { autoIncrement: true });
-        this.Index = this.Store.createIndex("ID", "ID", { unique: true });
+        const IDB = this.request.result;
+        const store = IDB.createObjectStore(this.STORE_NAME, { autoIncrement: true });
+        store.createIndex("ID", "ID", { unique: true });
       };
       this.request.onsuccess = event => resolve(event.target.result);
       this.request.onerror = error => reject(error);
@@ -23,13 +18,12 @@ const TodoDB = {
 
   prepare(IDB) {
     const tx = IDB.transaction(this.STORE_NAME, 'readwrite');
-    const store = tx.objectStore(this.STORE_NAME);
-    return store
+    return tx.objectStore(this.STORE_NAME);
   },
 
   async addTodo(IDB, todoItem) {
     const store = this.prepare(IDB);
-    const save = await store.put(todoItem);
+    const save = await store.add(todoItem);
     return new Promise((resolve, reject) => {
       save.onsuccess = event => resolve(event.target.result);
       save.onerror = error => reject(error);
@@ -43,6 +37,15 @@ const TodoDB = {
       remove.onsuccess = event => resolve(event.target.result);
       remove.onerror = error => reject(error);
     });
+  },
+
+  async updateTodo(IDB, updatedTodoItem, ID) {
+    const store = this.prepare(IDB);
+    const update = await store.put(updatedTodoItem, ID);
+    return new Promise(((resolve, reject) => {
+      update.onsuccess = event => resolve(event.target.result);
+      update.onerror = error => reject(error);
+    }));
   }
 };
 
