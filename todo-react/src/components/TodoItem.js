@@ -100,11 +100,11 @@ const TrashButton = styled.i`
   width: 18px;
   height: 100%;
   color:#000;
-  background-color: #FFE3E3;
+  background-color: #BBB;
   mask: url(${TrashIcon}) no-repeat 50% 50%;
   mask-size: contain;
   ${props => props.completed && css`
-    background-color: #BBB;
+    background-color: #FFE3E3;
   `}
 `;
 
@@ -176,6 +176,10 @@ class TodoItem extends React.Component {
       </PresetButtonContainer>
     );
   };
+
+  componentDidMount() {
+    document.querySelector("input#todoItem").setAttribute("readonly", "readonly");
+  }
 
   render() {
     const { whatTodo, status, startDate, endDate, handleCheck, handleTextEdit, handleDateEdit, handleRemove } = this.props;

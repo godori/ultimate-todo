@@ -18,7 +18,7 @@ const Overlay = styled.div`
 const InnerWrapper = styled.main`
   position: relative;
   display: block;
-  width: 85%;
+  width: 85vw;
   max-width: 1200px;
   height: 100vh;
   margin: 0 auto;
@@ -29,7 +29,7 @@ const CloseButton = styled.button`
   background-color: transparent;
   border: none;
   top: 30px;
-  right: -10px;
+  right: -7px;
   cursor: pointer;
   transition: all 100ms ease-in-out;
   
@@ -44,8 +44,8 @@ const CloseButton = styled.button`
 
 const CloseButtonIcon = styled.i`
   display: inline-block;
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   background-color: #00FFE2;
   mask: url(${closeButtonImage});
   mask-size: cover;
@@ -57,7 +57,7 @@ const Form = styled.form`
   font-family: SFCompactText, sans-serif;
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 30%;
   transform: translate(-50%, -50%);
   border-bottom: solid 2px #00ffe2;
   padding-bottom: 12px;
@@ -183,8 +183,16 @@ class AddTodoOverlay extends Component {
     });
   }
 
+  componentDidMount() {
+    document.querySelector("input#date").setAttribute("readonly", "readonly");
+  }
+
   componentDidUpdate() {
-    this.props.visible && this._input.focus();
+    if (this.props.visible && !this._input.value && !this.state.focused) {
+      this._input.focus();
+    } else {
+      this._input.blur();
+    }
   }
 
   render() {
