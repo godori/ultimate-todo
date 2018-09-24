@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "homepage": ".",
   "dependencies": {
     "lodash": "^4.17.10",
     "moment": "^2.22.2",
