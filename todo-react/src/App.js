@@ -84,7 +84,7 @@ class App extends Component {
       return todoItem;
     });
     this.setState({ todoItems });
-    this.sortByDate(this.state.sortType);
+    this.sortByDate(null, this.state.sortType);
   };
 
   filterTodoItem = tabName => {
@@ -116,7 +116,7 @@ class App extends Component {
     this.setState({ overLayVisible: true });
   };
 
-  sortByDate = (defaultSortType = null) => {
+  sortByDate = (event, defaultSortType = null) => {
     const { todoItems, sortType } = this.state;
     const newSortType = defaultSortType || (sortType === 'desc' ? 'asc' : 'desc');
     const sortingMethods = {
