@@ -12,7 +12,7 @@ const bounce = keyframes`
 `;
 
 const Button = styled.button`
-  position: absolute;
+  position: fixed;
   text-align: center;
   bottom: 20px;
   right: 20px;
