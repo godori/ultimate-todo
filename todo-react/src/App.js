@@ -176,7 +176,7 @@ class App extends Component {
     };
     return (
       <Fragment>
-        <Container>
+        <Container overlayVisible={this.state.overLayVisible}>
           <Header/>
           <Navigation>
             <Tabs initialValue={0} tabNames={this.state.tabs} onClick={this.filterTodoItem}/>

@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 
 const Div = styled.div`
@@ -7,12 +7,15 @@ const Div = styled.div`
   height: 100vh;
   max-width: 1024px;
   margin: 0 auto;
+  ${props => props.isUnderOverlay && css`
+    overflow: hidden;
+  `}
 `;
 
 
-const Container = ({ children }) => {
+const Container = ({ overlayVisible, children }) => {
   return (
-    <Div>
+    <Div isUnderOverlay={overlayVisible}>
       {children}
     </Div>
   );
