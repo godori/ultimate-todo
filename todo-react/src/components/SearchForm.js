@@ -61,7 +61,8 @@ class SearchForm extends React.Component {
   _input = '';
 
   clearInputField = () => {
-    this._input.innerHTML = '';
+    this.props.handleSearch('');
+    this._input.textContent = '';
   };
 
   handleInput = event => {
