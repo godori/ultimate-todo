@@ -1,17 +1,25 @@
 const path = require('path');
 const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV,
   target: 'web',
   context: path.resolve(__dirname, 'src'),
-  entry: ['babel-polyfill', './index.js'],
+  entry: {
+    polyfill: '@babel/polyfill',
+    app: './index.js',
+  },
   output: {
     path: path.resolve(__dirname, 'build'),
-    filename: 'bundle.js',
+    filename: 'static/js/[name].[hash:8].js',
+    chunkFilename: 'static/js/[name].[hash:8].chunk.js',
+  },
+  resolve: {
+    extensions: ['.js', '.json'],
   },
   module: {
     rules: [
@@ -60,9 +68,39 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        vendor: {
+          chunks: 'all',
+          name: 'vendor',
+          test: /node_modules/,
+        },
+      },
+    },
+  },
   plugins: [
-    new CleanWebpackPlugin(['dist'], {
-      verbose: false,
+    new CleanWebpackPlugin(['build'], { verbose: false }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: path.resolve(__dirname, 'public/index.html'),
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeRedundantAttributes: true,
+        useShortDoctype: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        keepClosingSlash: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true,
+      },
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'static/css/[name].[contenthash:8].css',
+      chunkFilename: 'static/css/[name].[contenthash:8].chunk.css',
     }),
     new UglifyJSPlugin({
       uglifyOptions: {
@@ -72,5 +110,6 @@ module.exports = {
       },
     }),
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
 };

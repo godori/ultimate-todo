@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV,
@@ -11,8 +12,19 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
-    chunkFilename: '[name].chunk.js',
+    filename: 'static/js/bundle.js',
+    chunkFilename: 'static/js/[name].chunk.js',
+  },
+  resolve: {
+    extensions: ['.js', '.json'],
+  },
+  devServer: {
+    host: '127.0.0.1',
+    publicPath: '/assets/',
+    contentBase: path.resolve(__dirname, 'public'),
+    watchContentBase: true,
+    compress: true,
+    port: 8000,
   },
   module: {
     rules: [
@@ -36,7 +48,21 @@ module.exports = {
         use: [
           { loader: require.resolve('style-loader') },
           { loader: require.resolve('css-loader') },
-          { loader: require.resolve('postcss-loader') },
+          {
+            loader: require.resolve('postcss-loader'),
+            options: {
+              ident: 'postcss',
+              plugins: () => [
+                require('postcss-flexbugs-fixes'),
+                require('postcss-preset-env')({
+                  autoprefixer: {
+                    flexbox: 'no-2009',
+                  },
+                  stage: 3,
+                }),
+              ],
+            },
+          },
           { loader: require.resolve('sass-loader') },
         ],
       },
@@ -61,7 +87,18 @@ module.exports = {
       },
     ],
   },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      name: false,
+    },
+    runtimeChunk: true,
+  },
   plugins: [
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: path.resolve(__dirname, 'public/index.html'),
+    }),
     new CleanWebpackPlugin(['dist'], {
       verbose: true,
     }),
