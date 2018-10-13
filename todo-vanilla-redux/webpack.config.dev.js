@@ -3,6 +3,29 @@ const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
+const DEVSERVER_PORT = 3000;
+
+const resolvedPaths = {
+  dist: path.resolve(__dirname, 'dist'),
+  public: path.resolve(__dirname, 'public'),
+  appHtml: path.resolve(__dirname, 'public/index.html'),
+};
+
+const devserverConfig = {
+  host: '127.0.0.1',
+  contentBase: resolvedPaths.public,
+  watchContentBase: true,
+  compress: true,
+  port: DEVSERVER_PORT,
+  inline: true,
+  hot: true,
+  historyApiFallback: true,
+  overlay: true,
+  watchOptions: {
+    poll: true,
+  },
+};
+
 module.exports = {
   mode: process.env.NODE_ENV,
   devtool: 'cheap-eval-source-map',
@@ -11,7 +34,7 @@ module.exports = {
     app: './src/index.js',
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: resolvedPaths.dist,
     filename: 'static/js/bundle.js',
     chunkFilename: 'static/js/[name].chunk.js',
     publicPath: '/',
@@ -19,20 +42,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.json'],
   },
-  devServer: {
-    host: '127.0.0.1',
-    contentBase: path.join(__dirname, 'public'),
-    watchContentBase: true,
-    compress: true,
-    port: 8000,
-    inline: true,
-    hot: true,
-    historyApiFallback: true,
-    overlay: true,
-    watchOptions: {
-      poll: true,
-    },
-  },
+  devServer: devserverConfig,
   module: {
     rules: [
       {
@@ -126,7 +136,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       inject: true,
-      template: path.resolve(__dirname, 'public/index.html'),
+      template: resolvedPaths.appHtml,
     }),
     new CleanWebpackPlugin(['dist'], {
       verbose: true,
