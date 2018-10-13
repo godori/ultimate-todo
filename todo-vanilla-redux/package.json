@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "cross-env NODE_ENV=development webpack --config=webpack.dev.config.js",
+    "start": "cross-env NODE_ENV=development webpack-dev-server --config=webpack.config.dev.js --open",
     "build": "cross-env NODE_ENV=production webpack --config=webpack.prod.config.js"
   },
   "keywords": [],
@@ -19,6 +19,7 @@
     "css-loader": "^1.0.0",
     "eslint": "^5.6.1",
     "eslint-config-airbnb": "^17.1.0",
+    "eslint-friendly-formatter": "^4.0.1",
     "eslint-loader": "^2.1.1",
     "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "^6.1.2",
@@ -39,6 +40,9 @@
     "webpack-hot-middleware": "^2.24.3"
   },
   "eslintConfig": {
+    "env": {
+      "browser": true
+    },
     "parserOptions": {
       "ecmaVersion": 9
     },

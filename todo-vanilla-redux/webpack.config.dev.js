@@ -14,17 +14,24 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'static/js/bundle.js',
     chunkFilename: 'static/js/[name].chunk.js',
+    publicPath: '/',
   },
   resolve: {
     extensions: ['.js', '.json'],
   },
   devServer: {
     host: '127.0.0.1',
-    publicPath: '/assets/',
-    contentBase: path.resolve(__dirname, 'public'),
+    contentBase: path.join(__dirname, 'public'),
     watchContentBase: true,
     compress: true,
     port: 8000,
+    inline: true,
+    hot: true,
+    historyApiFallback: true,
+    overlay: true,
+    watchOptions: {
+      poll: true,
+    },
   },
   module: {
     rules: [
@@ -33,6 +40,11 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: require.resolve('eslint-loader'),
+        options: {
+          formatter: require.resolve('eslint-friendly-formatter'),
+          emitWarning: true,
+          quiet: true,
+        },
       },
       {
         test: /\.js$/,
@@ -53,8 +65,8 @@ module.exports = {
             options: {
               ident: 'postcss',
               plugins: () => [
-                require('postcss-flexbugs-fixes'),
-                require('postcss-preset-env')({
+                require.resolve('postcss-flexbugs-fixes'),
+                require.resolve('postcss-preset-env')({
                   autoprefixer: {
                     flexbox: 'no-2009',
                   },
@@ -89,8 +101,25 @@ module.exports = {
   },
   optimization: {
     splitChunks: {
-      chunks: 'all',
-      name: false,
+      chunks: 'async',
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 5,
+      maxInitialRequests: 3,
+      automaticNameDelimiter: '~',
+      name: true,
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10,
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
+        },
+      },
     },
     runtimeChunk: true,
   },
@@ -103,5 +132,6 @@ module.exports = {
       verbose: true,
     }),
     new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoEmitOnErrorsPlugin(),
   ],
 };
