@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const PnpWebpackPlugin = require('pnp-webpack-plugin');
 
 const DEVSERVER_PORT = 3000;
 
@@ -41,6 +42,10 @@ module.exports = {
   },
   resolve: {
     extensions: ['.js', '.json'],
+    plugins: [PnpWebpackPlugin],
+  },
+  resolveLoader: {
+    plugins: [PnpWebpackPlugin.moduleLoader(module)],
   },
   devServer: devserverConfig,
   module: {

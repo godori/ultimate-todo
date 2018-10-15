@@ -1,5 +1,10 @@
-const $root = document.getElementById('app');
-const $h1 = document.createElement('h1');
+// actions
+const INCREMENT = 'INCREMENT';
+const DECREMENT = 'DECREMENT';
 
-$h1.innerText = 'Hello World!';
-$root.appendChild($h1);
+// actionsTypes
+const increment = () => {
+  return {
+    type: INCREMENT,
+  };
+};
