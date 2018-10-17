@@ -1,16 +1,25 @@
-import { store, increment, decrement } from './store';
+import { addTodo, store } from './store';
+import Todo from './todo';
 
-const $display = document.querySelector('.display');
-const $plusButton = document.querySelector('.plus');
-const $minusButton = document.querySelector('.minus');
+const $todoInput = document.querySelector('#todo');
+const $submitButton = document.querySelector('.submit-button');
+const $todoContainer = document.querySelector('.todos');
 
-const render = () => {
+const renderTodoItem = () => {
   const state = store.getState();
-  $display.innerText = state.counter;
+  const { id, todos } = state;
+  if (todos.length) {
+    const { text } = todos[todos.length - 1];
+    const todo = Object.create(Todo).init(id, text);
+    const $todoFragment = todo.$view;
+    $todoContainer.appendChild($todoFragment);
+  }
 };
 
-render();
-store.subscribe(render);
+renderTodoItem();
+store.subscribe(renderTodoItem);
 
-$plusButton.onclick = () => store.dispatch(increment());
-$minusButton.onclick = () => store.dispatch(decrement());
+$submitButton.onclick = () => {
+  const { value } = $todoInput;
+  store.dispatch(addTodo(value));
+};

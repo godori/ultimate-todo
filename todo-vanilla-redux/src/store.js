@@ -1,39 +1,32 @@
-// actions
 import { createStore } from 'redux';
 
-const INCREMENT = 'INCREMENT';
-const DECREMENT = 'DECREMENT';
+const ADD_TODO = 'ADD_TODO';
 
-// actionsTypes
-const increment = () => ({
-  type: INCREMENT,
-});
-
-const decrement = () => ({
-  type: DECREMENT,
+const addTodo = (text, status = 0) => ({
+  type: ADD_TODO,
+  text,
+  status,
 });
 
 const initialState = {
-  counter: 0,
+  ID: 0,
+  todos: [],
 };
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
-    case INCREMENT:
+    case ADD_TODO:
+      const { text, status } = action;
+      state.ID++;
       return {
         ...state,
-        counter: state.counter + 1,
-      };
-    case DECREMENT:
-      return {
-        ...state,
-        counter: state.counter - 1,
+        todos: [...state.todos, { ID: state.ID, text, status }],
       };
     default:
       return state;
   }
 };
 
-const store = createStore(reducer);
+const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
-export { store, increment, decrement };
+export { store, addTodo };
