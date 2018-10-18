@@ -57,6 +57,12 @@
             "error"
           ]
         }
+      ],
+      "no-underscore-dangle": "off",
+      "no-plusplus": "off",
+      "function-paren-newline": [
+        "error",
+        "never"
       ]
     },
     "extends": [

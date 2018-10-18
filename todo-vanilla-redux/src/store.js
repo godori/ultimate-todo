@@ -16,17 +16,24 @@ const initialState = {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TODO:
-      const { text, status } = action;
-      state.ID++;
       return {
         ...state,
-        todos: [...state.todos, { ID: state.ID, text, status }],
+        todos: [...state.todos,
+          {
+            /* eslint-disable no-param-reassign */
+            ID: ++state.ID,
+            /* eslint-enable no-param-reassign */
+            text: action.text,
+            status: action.status,
+          },
+        ],
       };
     default:
       return state;
   }
 };
 
-const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+const { __REDUX_DEVTOOLS_EXTENSION__ } = window;
+const store = createStore(reducer, __REDUX_DEVTOOLS_EXTENSION__ && __REDUX_DEVTOOLS_EXTENSION__());
 
 export { store, addTodo };

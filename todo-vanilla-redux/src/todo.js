@@ -8,7 +8,8 @@ const Todo = {
   text: null,
   status: 0,
   get $view() {
-    return document.createRange().createContextualFragment(`<li data-key="${this.id}">${this.text}</li>`);
+    return document.createRange()
+      .createContextualFragment(`<li data-key="${this.id}">${this.text}</li>`);
   },
 };
 
